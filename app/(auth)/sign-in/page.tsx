@@ -26,7 +26,7 @@ export default function SignInPage() {
                   href="/sign-up"
                   className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
-                  Sign in
+                  Sign up
                 </Link>
               </p>
             </div>

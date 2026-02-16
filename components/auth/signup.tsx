@@ -20,8 +20,7 @@ const SignUp: React.FC = () => {
   const router = useRouter();
   const [registerUser, { isLoading, isSuccess, isError, error }] =
     useRegisterUserMutation();
-  const [validationError, setValidationError] = useState<string>("");
-
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   useEffect(() => {
     if (isSuccess) {
       router.push("/sign-in");
@@ -30,12 +29,6 @@ const SignUp: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setValidationError("");
-
-    if (formData.password.length < 8) {
-      setValidationError("Password must be at least 8 characters long.");
-      return;
-    }
 
     try {
       await registerUser(formData).unwrap();
@@ -48,9 +41,24 @@ const SignUp: React.FC = () => {
         role: "Staff",
         phone_number: null,
       });
-    } catch (error) {
-      toast.error("Registration Failed");
-      console.error("Something went wrong");
+      toast.success("Registration Successful");
+    } catch (error: any) {
+      if (error?.data && typeof error.data === "object") {
+        const errors: { [key: string]: string } = {};
+
+        for (const key in error.data) {
+          if (Array.isArray(error.data[key])) {
+            // Take the first error message for each field
+            errors[key] = error.data[key][0];
+          } else if (typeof error.data[key] === "string") {
+            errors[key] = error.data[key];
+          }
+        }
+
+        setFieldErrors(errors);
+      }
+      // toast.error("Registration Failed");
+      // console.error("Something went wrong");
     }
   };
 
@@ -62,39 +70,16 @@ const SignUp: React.FC = () => {
     !formData.role ||
     !formData.username;
 
-  const getErrorMessages = (error: any) => {
-    if (!error || !("data" in error)) return "An error occurred";
-    const data = error.data;
-    if (typeof data === "string") return data;
-
-    const messages: string[] = [];
-    for (const key in data) {
-      if (Array.isArray(data[key])) {
-        data[key].forEach((msg: string) => messages.push(`${key}: ${msg}`));
-      }
-    }
-    // toast.error("Registration Failed");
-    return messages.join(" | ");
-  };
-
-  const errorMessage = isError ? getErrorMessages(error) : "";
-
   return (
     <div className="rounded-lg border bg-white p-8 shadow-sm">
-      {(isError || validationError) && (
-        <div className="mb-4 rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">
-            {validationError || errorMessage}
-          </p>
-        </div>
-      )}
       <CommonForm
         formControls={signUpFormControls}
-        buttonText="Sign Up"
+        buttonText={isLoading ? "Loading..." : "Sign Up"}
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
         isBtnDisabled={isButtonDisabled}
+        errors={fieldErrors}
       />
     </div>
   );

@@ -21,6 +21,7 @@ const CommonForm = <T extends Record<string, any>>({
   onSubmit,
   buttonText,
   isBtnDisabled = false,
+  errors = {},
 }: CommonFormProps<T>) => {
   function renderInputsByComponentType(
     getControlItem: FormControl<T>,
@@ -118,6 +119,12 @@ const CommonForm = <T extends Record<string, any>>({
       <div className="flex flex-col gap-3">
         {formControls.map((controlItem) => (
           <div className="grid w-full gap-1.5" key={String(controlItem.name)}>
+            {errors[controlItem.name] && (
+              <div className="text-sm text-red-600 mb-1">
+                {errors[controlItem.name]}
+              </div>
+            )}
+
             <Label className="mb-1">{controlItem.label}</Label>
             {renderInputsByComponentType(controlItem)}
           </div>

@@ -18,4 +18,5 @@ export interface CommonFormProps<T> {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   buttonText?: string;
   isBtnDisabled?: boolean;
+  errors?: { [K in keyof T]?: string };
 }
