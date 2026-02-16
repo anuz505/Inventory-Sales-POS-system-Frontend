@@ -24,6 +24,22 @@ const SignIn: React.FC = () => {
     }
   }, [isSuccess, router]);
 
+  useEffect(() => {
+    const Error = error as any;
+    if (Error?.data && typeof Error.data === "object") {
+      const errors: { [key: string]: string } = {};
+      for (const key in Error.data) {
+        if (Array.isArray(Error.data[key])) {
+          errors[key] = Error.data[key][0];
+        } else if (typeof Error.data[key] === "string") {
+          errors[key] = Error.data[key];
+        }
+      }
+      setFieldErrors(errors);
+      console.log("fieldErrors", errors);
+      toast.error("Sign in Failed");
+    }
+  }, [error]);
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -34,21 +50,7 @@ const SignIn: React.FC = () => {
       });
       toast.success("Sign in Successful");
     } catch (error: any) {
-      if (error?.data && typeof error.data === "object") {
-        const errors: { [key: string]: string } = {};
-
-        for (const key in error.data) {
-          if (Array.isArray(error.data[key])) {
-            // Take the first error message for each field
-            errors[key] = error.data[key][0];
-          } else if (typeof error.data[key] === "string") {
-            errors[key] = error.data[key];
-          }
-        }
-
-        setFieldErrors(errors);
-      }
-      toast.error("Sign in Failed");
+      console.error("something went wrong with Sign in");
     }
   };
   return (
@@ -59,6 +61,7 @@ const SignIn: React.FC = () => {
         buttonText={isLoading ? "Loading..." : "Sign in"}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        errors={fieldErrors}
       />
     </>
   );

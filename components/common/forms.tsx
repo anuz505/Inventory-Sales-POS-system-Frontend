@@ -116,6 +116,12 @@ const CommonForm = <T extends Record<string, any>>({
 
   return (
     <form onSubmit={onSubmit}>
+      {/* Show non-field errors at the top */}
+      {(errors.non_field_errors || errors.detail) && (
+        <div className="text-sm text-red-600 mb-2">
+          {errors.non_field_errors || errors.detail}
+        </div>
+      )}
       <div className="flex flex-col gap-3">
         {formControls.map((controlItem) => (
           <div className="grid w-full gap-1.5" key={String(controlItem.name)}>
@@ -124,7 +130,6 @@ const CommonForm = <T extends Record<string, any>>({
                 {errors[controlItem.name]}
               </div>
             )}
-
             <Label className="mb-1">{controlItem.label}</Label>
             {renderInputsByComponentType(controlItem)}
           </div>

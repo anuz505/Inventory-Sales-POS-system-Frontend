@@ -27,9 +27,24 @@ const SignUp: React.FC = () => {
     }
   }, [isSuccess, router]);
 
+  useEffect(() => {
+    const Error = error as any;
+    if (Error?.data && typeof Error.data === "object") {
+      const errors: { [key: string]: string } = {};
+      for (const key in Error.data) {
+        if (Array.isArray(Error.data[key])) {
+          errors[key] = Error.data[key][0];
+        } else if (typeof Error.data[key] === "string") {
+          errors[key] = Error.data[key];
+        }
+      }
+      setFieldErrors(errors);
+      toast.error("Registration Failed");
+    }
+  }, [error]);
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       await registerUser(formData).unwrap();
       setFormData({
@@ -42,23 +57,8 @@ const SignUp: React.FC = () => {
         phone_number: null,
       });
       toast.success("Registration Successful");
-    } catch (error: any) {
-      if (error?.data && typeof error.data === "object") {
-        const errors: { [key: string]: string } = {};
-
-        for (const key in error.data) {
-          if (Array.isArray(error.data[key])) {
-            // Take the first error message for each field
-            errors[key] = error.data[key][0];
-          } else if (typeof error.data[key] === "string") {
-            errors[key] = error.data[key];
-          }
-        }
-
-        setFieldErrors(errors);
-      }
-      // toast.error("Registration Failed");
-      // console.error("Something went wrong");
+    } catch {
+      console.log("something went wrong with registration");
     }
   };
 
