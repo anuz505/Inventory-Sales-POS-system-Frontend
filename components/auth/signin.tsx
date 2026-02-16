@@ -7,12 +7,13 @@ import { useLoginUserMutation } from "@/store/auth-slice/index";
 import { signInFormControls } from "@/config/form-controls";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-
+import usePublicRoute from "@/hooks/PublicRoute";
 const SignIn: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormDataType>({
     username: "",
     password: "",
   });
+  const loading = usePublicRoute();
 
   const [loginUser, { isLoading, isSuccess, isError, error }] =
     useLoginUserMutation();
@@ -53,6 +54,11 @@ const SignIn: React.FC = () => {
       console.error("something went wrong with Sign in");
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <CommonForm
