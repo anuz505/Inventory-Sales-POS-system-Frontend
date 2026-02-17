@@ -2,7 +2,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function usePublicRoute() {
+export interface AuthCheckResponse {
+  authenticated: boolean;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    is_staff: boolean;
+    is_superuser: boolean;
+    date_joined: string;
+  };
+}
+
+export default function usePublicRoute(redirectPath: string = "/") {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -10,12 +24,15 @@ export default function usePublicRoute() {
     async function checkAuth() {
       try {
         // 1️⃣ Check access token
-        await axios.get("http://localhost:8000/api/check-auth/", {
-          withCredentials: true,
-        });
+        const res = await axios.get<AuthCheckResponse>(
+          "http://localhost:8000/api/check-auth/",
+          {
+            withCredentials: true,
+          },
+        );
 
         // If access token valid → redirect
-        router.replace("/");
+        router.replace(redirectPath);
       } catch (error: any) {
         if (error.response?.status === 401) {
           try {
@@ -27,11 +44,14 @@ export default function usePublicRoute() {
             );
 
             // 3️⃣ Retry check-auth
-            await axios.get("http://localhost:8000/api/check-auth/", {
-              withCredentials: true,
-            });
+            const res = await axios.get(
+              "http://localhost:8000/api/check-auth/",
+              {
+                withCredentials: true,
+              },
+            );
 
-            router.replace("/");
+            router.replace(redirectPath);
           } catch {
             // Refresh failed → allow access to public page
             setLoading(false);
@@ -43,7 +63,7 @@ export default function usePublicRoute() {
     }
 
     checkAuth();
-  }, [router]);
+  }, [router, redirectPath]);
 
-  return loading;
+  return { loading };
 }

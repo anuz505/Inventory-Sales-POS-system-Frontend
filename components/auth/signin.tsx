@@ -13,10 +13,9 @@ const SignIn: React.FC = () => {
     username: "",
     password: "",
   });
-  const loading = usePublicRoute();
+  const { loading } = usePublicRoute();
 
-  const [loginUser, { isLoading, isSuccess, isError, error }] =
-    useLoginUserMutation();
+  const [loginUser, { isLoading, isSuccess, error }] = useLoginUserMutation();
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   useEffect(() => {
