@@ -9,10 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AnimatedWarehouse from "../animated-icon/animated-icon-wrapper";
 import { Button } from "../ui/button";
 import { useProducts } from "@/hooks/useProducts";
 import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
+import { useRouter } from "next/navigation";
 function Products() {
   const [offset, setOffset] = useState(0);
   const limit = 20;
@@ -22,7 +24,7 @@ function Products() {
     isLoading,
     error,
   } = useProducts({ limit: limit.toString(), offset: offset.toString() });
-
+  const router = useRouter();
   React.useEffect(() => {
     if (products?.results) {
       setAllProducts((prev) => {
@@ -62,22 +64,33 @@ function Products() {
             <TableHead>Supplier</TableHead>
             <TableHead>Stock</TableHead>
             <TableHead>Selling Price</TableHead>
+            <TableHead>Stock</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {allProducts.map((product) => (
-            <TableRow key={product.id}>
+            <TableRow
+              key={product.id}
+              onClick={() => router.push(`/products/${product.id}`)}
+            >
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.sku}</TableCell>
               <TableCell>{product.category_name}</TableCell>
               <TableCell>{product.supplier_name}</TableCell>
               <TableCell>{product.stock_quantity}</TableCell>
               <TableCell>{product.selling_price}</TableCell>
+              <TableCell>
+                {product.stock_quantity < product.low_stock_limit ? (
+                  <AnimatedWarehouse stock={"low"} />
+                ) : (
+                  <AnimatedWarehouse stock={"ok"} />
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center gap-4 mt-4">
+      <div className="flex justify-end items-center gap-4 mt-4">
         <span>
           Showing {allProducts.length} of {totalCount} products
         </span>

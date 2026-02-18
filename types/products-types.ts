@@ -22,9 +22,9 @@ export interface ProductListResponse {
   count: number;
   next: string;
   previous: string;
-  results: Product[];
+  results: ProductType[];
 }
-export interface Product {
+export interface ProductType {
   id: string;
   name: string;
   sku: string;

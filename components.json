@@ -20,6 +20,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@ss-blocks": "https://shadcnstudio.com/r/blocks/{name}.json"
+    "@ss-blocks": "https://shadcnstudio.com/r/blocks/{name}.json",
+    "@animate-ui": "https://animate-ui.com/r/{name}.json"
   }
 }
