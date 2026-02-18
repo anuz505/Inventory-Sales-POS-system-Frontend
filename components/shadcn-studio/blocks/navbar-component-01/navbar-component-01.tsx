@@ -15,8 +15,9 @@ type NavigationItem = {
   title: string;
   href: string;
 }[];
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import useAuthCheckUser from "@/hooks/AuthCheckUser";
-const Navbar = ({ navigationData }: { navigationData: NavigationItem }) => {
+const Navbar = () => {
   const { user, loading } = useAuthCheckUser();
   const router = useRouter();
   const handleLoginButtonclick = () => {
@@ -24,14 +25,17 @@ const Navbar = ({ navigationData }: { navigationData: NavigationItem }) => {
   };
   const { setTheme } = useTheme();
   return (
-    <header className="bg-background sticky top-0 z-50 flex justify-center items-center">
+    <header className="bg-background z-50 sticky top-0 flex justify-center items-center">
       <div className="flex w-full  justify-between  py-6 sm:px-2 items-center">
-        <h1
-          onClick={() => router.push("/")}
-          className="px-4  md:text-4xl font-poppins text-2xl font-bold text-primary"
-        >
-          Dashboard
-        </h1>
+        <div className="flex">
+          <SidebarTrigger />
+          <h1
+            onClick={() => router.push("/")}
+            className="px-4  md:text-4xl font-poppins text-2xl font-bold text-primary"
+          >
+            Dashboard
+          </h1>
+        </div>
         <div className="flex justify-between gap-4 pr-3">
           <div className="text-muted-foreground    font-medium md:justify-end lg:justify-end md:flex lg:flex">
             <Button onClick={handleLoginButtonclick}>

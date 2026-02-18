@@ -9,9 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { Button } from "../ui/button";
 import { useProducts } from "@/hooks/useProducts";
-
+import { Spinner } from "../ui/spinner";
+import SkeletonTable from "../common/skeleton-table";
 function Products() {
   const [offset, setOffset] = useState(0);
   const limit = 20;
@@ -43,14 +44,14 @@ function Products() {
     if (hasMore) setOffset(offset + limit);
   };
 
-  if (isLoading && offset === 0) return <div>Loading...</div>;
+  if (isLoading && offset === 0) return <SkeletonTable />;
   if (error) {
     console.error(error);
     return <div className="text-red-500 text-sm">Error loading products.</div>;
   }
 
   return (
-    <div className="py-5 px-7">
+    <div className="py-5 px-7 w-full">
       <Table>
         <TableCaption>Product List</TableCaption>
         <TableHeader>
@@ -80,13 +81,19 @@ function Products() {
         <span>
           Showing {allProducts.length} of {totalCount} products
         </span>
-        <button
+        <Button
           onClick={handleLoadMore}
           disabled={!hasMore || isLoading}
-          className={`px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50`}
+          className={`px-4 py-2 rounded bg-primary  disabled:opacity-50`}
         >
-          {isLoading ? "Loading..." : "Load More"}
-        </button>
+          {isLoading ? (
+            <div className="flex gap-2">
+              <Spinner /> Loading..
+            </div>
+          ) : (
+            "Load More"
+          )}
+        </Button>
       </div>
     </div>
   );

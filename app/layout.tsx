@@ -3,8 +3,8 @@ import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/providers/ReduxProvider";
 import { Toaster } from "react-hot-toast";
-import { NavbarWrapper } from "@/components/common/Navbar";
 import { ThemeProvider } from "@/providers/theme-provider";
+import SidebarWrapper from "@/providers/sidebar-provider";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -35,8 +35,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <NavbarWrapper />
-            {children}
+            <SidebarWrapper>{children}</SidebarWrapper>
             <Toaster />
           </ThemeProvider>
         </ReduxProvider>
