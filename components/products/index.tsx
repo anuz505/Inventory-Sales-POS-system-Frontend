@@ -25,11 +25,8 @@ function Products() {
   React.useEffect(() => {
     if (products?.results) {
       setAllProducts((prev) => {
-        // If offset is 0, start fresh
         const base = offset === 0 ? [] : prev;
-        // Combine previous and new products
         const combined = [...base, ...products.results];
-        // Deduplicate by id
         const uniqueMap = new Map();
         for (const item of combined) {
           uniqueMap.set(item.id, item);

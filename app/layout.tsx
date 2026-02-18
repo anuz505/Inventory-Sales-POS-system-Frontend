@@ -4,7 +4,7 @@ import "./globals.css";
 import ReduxProvider from "@/providers/ReduxProvider";
 import { Toaster } from "react-hot-toast";
 import { NavbarWrapper } from "@/components/common/Navbar";
-
+import { ThemeProvider } from "@/providers/theme-provider";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -29,9 +29,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${poppins.variable} intialiased`}>
         <ReduxProvider>
-          <NavbarWrapper />
-          {children}
-          <Toaster />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NavbarWrapper />
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </ReduxProvider>
       </body>
     </html>
