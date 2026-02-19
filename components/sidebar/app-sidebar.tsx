@@ -39,6 +39,7 @@ export function AppSidebar() {
               <DropdownMenu.Content className="w-[--radix-popper-anchor-width]">
                 <DropdownMenu.Item>
                   <span>Hello</span>
+                  {/* TODO */}
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
