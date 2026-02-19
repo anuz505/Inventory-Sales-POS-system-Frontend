@@ -17,4 +17,5 @@ export type SalesItemResponseType = {
   payment_status: string;
   user: number;
   total_amount: number;
+  created_at: string;
 }[];

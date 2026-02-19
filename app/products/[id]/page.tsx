@@ -16,12 +16,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, PackageOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ProductSalesChartLine } from "@/components/charts/products-sales-chart";
+import { useRouter } from "next/navigation";
 export default function ProductDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = React.use(params);
+  const router = useRouter();
   const {
     data: product,
     isLoading: productIsLoading,
@@ -45,8 +47,12 @@ export default function ProductDetail({
   if (saleItemError) return <div className="text-red-500">Sale Item Error</div>;
   if (!saleitem) return <div>Product has not been sold.</div>;
   return (
-    <div className="p-6 space-y-4">
-      <Button variant="ghost" size="lg">
+    <div className="p-6 space-y-4 pb-20">
+      <Button
+        variant="ghost"
+        size="lg"
+        onClick={() => router.push("/products")}
+      >
         <ArrowLeft className="h-2 w-2" />
         Back
       </Button>
@@ -93,12 +99,19 @@ export default function ProductDetail({
 
       <div>
         <div className="flex justify-between mx-auto">
-          <div className="font-bold text-xl  px-6 h-2 ">
-            Sales Related to Product
-          </div>
           <div className="flex justify-end items-center gap-4 mr-5">
             <TotalProductsSoldCard quantity={saleitem.length} />
           </div>
+        </div>
+        <div className="mb-15">
+          <ProductSalesChartLine
+            saleitem={saleitem}
+            productId={id}
+            productName={product.name}
+          />
+        </div>
+        <div className="font-bold text-xl  px-6 h-2 mb-15">
+          Sales Related to Product
         </div>
         {saleitem.length > 0 ? (
           <Table>
@@ -128,7 +141,7 @@ export default function ProductDetail({
             </TableBody>
           </Table>
         ) : (
-          <Card className="flex flex-col items-center justify-center py-0 text-center">
+          <Card className="flex flex-col items-center justify-center py-5 text-center">
             <PackageOpen className="h-8 w-8 text-muted-foreground mb-2" />
             <h3 className="font-semibold">No sales yet</h3>
             <p className="text-sm text-muted-foreground">
