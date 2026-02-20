@@ -1,3 +1,5 @@
+"use client";
+import { useTrends } from "@/hooks/use-trends";
 import { TrendingDownIcon } from "./trending-down";
 import { TrendingUpIcon } from "./trending-up";
 import { Badge } from "@/components/ui/badge";
@@ -9,30 +11,69 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import { Minus } from "lucide-react";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 export function SectionCards() {
+  const {
+    data: trends,
+    isLoading: TrendsIsLoading,
+    error: TrendsError,
+  } = useTrends();
+  const {
+    data: stats,
+    isLoading: statsIsLoading,
+    error: statsError,
+  } = useDashboardStats();
+
+  const sale_trend = trends?.sales_trend;
+  const profit_trend = trends?.profit_trend;
+  const customer_trend = trends?.customer_trend;
+  if (TrendsIsLoading) return "Loading..";
+  if (TrendsError) {
+    console.error(TrendsError);
+    return <div className="text-red-500 text-sm">Error loading trends.</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
       <Card>
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            $1,250.00
+            Rs. {stats?.this_period.sales.total_sales}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <TrendingUpIcon />
-              +12.5%
+            <Badge variant="outline" className="flex gap-1 items-center">
+              {sale_trend?.trend === "increasing" && (
+                <>
+                  <TrendingUpIcon />+
+                </>
+              )}
+              {sale_trend?.trend === "decreasing" && (
+                <>
+                  <TrendingDownIcon />-
+                </>
+              )}
+              {sale_trend?.trend === "stable" && <Minus />}
+              {Math.abs(trends?.sales_trend.percentage_change ?? 0)}%{" "}
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+        <CardFooter className="flex-col items-start gap-1.5 text-sm ">
           <div className="flex gap-2 font-medium">
-            Trending up this month <TrendingUpIcon className="size-4" />
+            {sale_trend?.trend === "increasing" && (
+              <span className="flex items-center gap-1 text-green-600 font-medium">
+                <TrendingUpIcon />
+                Upward Trend
+              </span>
+            )}
+            {sale_trend?.trend === "decreasing" && <TrendingDownIcon />}
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
+          <div className="flex gap-2 font-medium text-muted-foreground ">
+            {sale_trend?.trend === "increasing" && "Trending up this month"}
+            {sale_trend?.trend === "decreasing" && "Trending down this month"}
+            {sale_trend?.trend === "stable" && "No change this month"}
+          </div>{" "}
         </CardFooter>
       </Card>
 
@@ -40,43 +81,83 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>New Customers</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            1,234
+            {stats?.this_period.inventory.total_customers}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <TrendingDownIcon />
-              -20%
+              {customer_trend?.trend === "increasing" && (
+                <>
+                  <TrendingUpIcon />+
+                </>
+              )}
+              {customer_trend?.trend === "decreasing" && (
+                <>
+                  <TrendingDownIcon />-
+                </>
+              )}
+              {customer_trend?.trend === "stable" && <Minus />}
+              {Math.abs(trends?.customer_trend.percentage_change ?? 0)}%{" "}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="flex gap-2 font-medium">
-            Down 20% this period <TrendingDownIcon className="size-4" />
+            {customer_trend?.trend === "increasing" && (
+              <span className="flex items-center gap-1 text-green-600 font-medium">
+                <TrendingUpIcon />
+                New Customers Up
+              </span>
+            )}
+            {customer_trend?.trend === "decreasing" && <TrendingDownIcon />}
           </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
-          </div>
+          <div className="flex gap-2 font-medium text-muted-foreground">
+            {customer_trend?.trend === "increasing" && "Trending up this month"}
+            {customer_trend?.trend === "decreasing" &&
+              "Trending down this month"}
+            {customer_trend?.trend === "stable" && "No change this month"}
+          </div>{" "}
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>Profit</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            45,678
+            {/* Replace with actual profit value if available */}
+            Rs. {stats?.this_period.sales.total_profit_amount}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <TrendingUpIcon />
-              +12.5%
+            <Badge variant="outline" className="flex gap-1 items-center">
+              {profit_trend?.trend === "increasing" && (
+                <>
+                  <TrendingUpIcon />+
+                </>
+              )}
+              {profit_trend?.trend === "decreasing" && (
+                <>
+                  <TrendingDownIcon />-
+                </>
+              )}
+              {profit_trend?.trend === "stable" && <Minus />}
+              {Math.abs(trends?.profit_trend.percentage_change ?? 0)}%{" "}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="flex gap-2 font-medium">
-            Strong user retention <TrendingUpIcon className="size-4" />
+            {profit_trend?.trend === "increasing" && (
+              <span className="flex items-center gap-1 text-green-600 font-medium">
+                <TrendingUpIcon />
+                Profit Rising
+              </span>
+            )}
+            {profit_trend?.trend === "decreasing" && <TrendingDownIcon />}
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="flex gap-2 font-medium text-muted-foreground">
+            {profit_trend?.trend === "increasing" && "Trending up this month"}
+            {profit_trend?.trend === "decreasing" && "Trending down this month"}
+            {profit_trend?.trend === "stable" && "No change this month"}
+          </div>{" "}
         </CardFooter>
       </Card>
 
