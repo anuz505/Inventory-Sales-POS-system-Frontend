@@ -72,7 +72,7 @@ export function ChartPieDonutText() {
   if (statError) return <div>Error loading chart data.</div>;
 
   return (
-    <Card className="flex flex-col min-w-1/6">
+    <Card className="flex flex-col min-w-1/6 w-md sm:w-2/6">
       <CardHeader className="items-center pb-0">
         <CardTitle>Revenue by Payment Method</CardTitle>
         <CardDescription>This month</CardDescription>

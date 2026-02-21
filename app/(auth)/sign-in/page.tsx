@@ -4,13 +4,15 @@ import Link from "next/link";
 export default function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Left side - Welcome section */}
         <div className="flex-1 text-center lg:text-left">
           <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
             Welcome
           </h1>
-          <p className="text-lg text-gray-600">Hello,</p>
+          <p className="text-lg text-gray-600 lg:ml-7">
+            Your dashboard awaits.
+          </p>
         </div>
 
         {/* Right side - Sign up form */}

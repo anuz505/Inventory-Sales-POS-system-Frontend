@@ -35,7 +35,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SidebarWrapper>{children}</SidebarWrapper>
+            {/* <SidebarWrapper> */}
+            {children}
+            {/* </SidebarWrapper> */}
             <Toaster />
           </ThemeProvider>
         </ReduxProvider>

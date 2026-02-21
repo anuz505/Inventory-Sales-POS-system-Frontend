@@ -29,7 +29,7 @@ const Leaderboard3 = ({
   const products = stats?.this_period.sales.top_selling_products ?? [];
 
   return (
-    <Card className={cn("max-w-2/6 w-full", className)}>
+    <Card className={cn("max-w-md sm:max-w-2/6 w-full ", className)}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -50,7 +50,7 @@ const Leaderboard3 = ({
                 </span>
                 <span className="font-medium ">{product.product__name}</span>
               </div>
-              <div className="flex items-center justify-between w-40">
+              <div className="flex items-center justify-between gap-4  ">
                 <span className="text-xs text-muted-foreground ">
                   Qty: {product.total_quantity}
                 </span>
