@@ -16,19 +16,19 @@ import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useSearchParams } from "next/navigation";
 import { usePeriod } from "@/hooks/use-period-param";
 export function SectionCards() {
-  const period = usePeriod();
+  const params = usePeriod();
 
   const {
     data: trends,
     isLoading: TrendsIsLoading,
     error: TrendsError,
-  } = useTrends(period);
+  } = useTrends(params);
 
   const {
     data: stats,
     isLoading: statsIsLoading,
     error: statsError,
-  } = useDashboardStats(period);
+  } = useDashboardStats(params);
 
   const sale_trend = trends?.sales_trend;
   const profit_trend = trends?.profit_trend;
@@ -45,7 +45,9 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            Rs. {stats?.[period]?.sales.total_sales}
+            {params.period
+              ? `Rs. ${stats?.[params.period].sales?.total_sales ?? 0}`
+              : `Rs. ${stats?.[params.from!].sales?.total_sales ?? 0}`}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex gap-1 items-center">
@@ -86,7 +88,9 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>New Customers</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            {stats?.[period]?.inventory.total_customers}
+            {params.period
+              ? ` ${stats?.[params.period]?.inventory.total_customers ?? 0}`
+              : ` ${stats?.[params.from!]?.sales?.total_sales ?? 0}`}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -129,7 +133,9 @@ export function SectionCards() {
           <CardDescription>Profit</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
             {/* Replace with actual profit value if available */}
-            Rs. {stats?.[period]?.sales.total_profit_amount}
+            {params.period
+              ? `Rs. ${stats?.[params.period]?.sales.total_profit_amount ?? 0}`
+              : `Rs. ${stats?.[params.from!]?.sales?.total_profit_amount ?? 0}`}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex gap-1 items-center">

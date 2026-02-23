@@ -22,15 +22,19 @@ const Leaderboard3 = ({
   description = "Top Products with Highest Revenues",
   className,
 }: Leaderboard3Props) => {
-  const period = usePeriod();
+  const params = usePeriod();
 
   const {
     data: stats,
     isLoading: statsIsLoading,
     error: statsError,
-  } = useDashboardStats(period);
-
-  const products = stats?.[period].sales?.top_selling_products ?? [];
+  } = useDashboardStats(params);
+  let products: any[] = [];
+  if (params.period) {
+    products = stats?.[params.period]?.sales?.top_selling_products ?? [];
+  } else if (params.from) {
+    products = stats?.[params.from]?.sales?.top_selling_products ?? [];
+  }
 
   return (
     <Card className={cn("max-w-md sm:max-w-2/6 w-full ", className)}>

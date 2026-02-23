@@ -52,10 +52,12 @@ function Products() {
     console.error(error);
     return <div className="text-red-500 text-sm">Error loading products.</div>;
   }
-
+  const handleBackOnclick = () => {
+    router.push("/");
+  };
   return (
     <div className="py-5 px-7 w-full">
-      <Button variant="ghost">
+      <Button variant="ghost" onClick={handleBackOnclick}>
         <ArrowLeft />
         Back
       </Button>

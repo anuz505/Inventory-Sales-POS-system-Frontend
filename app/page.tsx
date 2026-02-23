@@ -3,7 +3,7 @@ import { ChartPieDonutText } from "@/components/ui/chart-pie-donut-text";
 import { SectionCards } from "@/components/ui/section-cards";
 import { ChartAreaInteractive } from "@/components/charts/profit-sales-chart";
 import SidebarWrapper from "@/providers/sidebar-provider";
-import RevenueMarginChart from "@/components/charts/composed-chart";
+// import RevenueMarginChart from "@/components/charts/composed-chart";
 import RevenueProfitChart from "@/components/charts/chart";
 import FiltersDashboard from "@/components/common/filtersdashboard";
 export default function Home() {

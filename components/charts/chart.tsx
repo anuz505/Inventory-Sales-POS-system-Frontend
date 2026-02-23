@@ -14,19 +14,20 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { usePeriod } from "@/hooks/use-period-param";
 
 const RevenueProfitChart = () => {
-  const period = usePeriod();
+  const params = usePeriod();
   const {
     data: RevenueProfit,
     isLoading,
     error,
-  } = useRevenueProfitchart(period);
+  } = useRevenueProfitchart(params);
   return (
     <Card className="py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-6 pb-3">
           <CardTitle>Profit & Margin Overview</CardTitle>
           <CardDescription>
-            Showing total profit and profit margin for the last {period}
+            Showing total profit and profit margin for the last{" "}
+            {params.period || `${params.from} to ${params.to}`}
           </CardDescription>
         </div>
       </CardHeader>

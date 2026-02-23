@@ -2,15 +2,17 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import type { DashboardTrendsResponse } from "@/types/dashboard-types";
-const fetchTrends = async (period: string) => {
-  const response = await axios.get<DashboardTrendsResponse>(
-    `http://localhost:8000/api-dashboard/trends/?period=${period}`,
-  );
+import { FilterParams } from "./use-revenue-profit-chart";
+import { buildApiUrl } from "@/utils/build-urls";
+
+const fetchTrends = async (params: FilterParams) => {
+  let url = buildApiUrl("http://localhost:8000/api-dashboard/trends", params);
+  const response = await axios.get<DashboardTrendsResponse>(url);
   return response.data;
 };
-export function useTrends(period: string) {
+export function useTrends(params: FilterParams) {
   return useQuery({
-    queryKey: ["trends", period],
-    queryFn: () => fetchTrends(period),
+    queryKey: ["trends", params],
+    queryFn: () => fetchTrends(params),
   });
 }

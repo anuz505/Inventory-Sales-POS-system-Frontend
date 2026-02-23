@@ -48,16 +48,22 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartPieDonutText() {
-  const period = usePeriod();
+  const params = usePeriod();
   const {
     data: stat,
     isLoading: statIsLoading,
     isError: statError,
-  } = useDashboardStats(period);
+  } = useDashboardStats(params);
 
   const chartData = React.useMemo(() => {
-    const paymentMethods =
-      stat?.[period]?.sales?.highest_revenue_payment_method ?? [];
+    let paymentMethods: any[] = [];
+    if (params.period) {
+      paymentMethods =
+        stat?.[params.period]?.sales?.highest_revenue_payment_method ?? [];
+    } else if (params.from && params.to) {
+      paymentMethods =
+        stat?.[params.from]?.sales?.highest_revenue_payment_method ?? [];
+    }
 
     return paymentMethods.map((item) => ({
       payment_method: item.payment_method,
@@ -77,7 +83,12 @@ export function ChartPieDonutText() {
     <Card className="flex flex-col min-w-1/6 w-md sm:w-2/6">
       <CardHeader className="items-center pb-0">
         <CardTitle>Revenue by Payment Method</CardTitle>
-        <CardDescription>This {period}</CardDescription>
+        <CardDescription>
+          This{" "}
+          {params.period
+            ? params.period
+            : `${params.from} to ${params.to}`}{" "}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
