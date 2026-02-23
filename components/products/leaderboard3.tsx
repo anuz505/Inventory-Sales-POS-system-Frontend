@@ -8,25 +8,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
-
+import { usePeriod } from "@/hooks/use-period-param";
 interface Leaderboard3Props {
   title?: string;
   description?: string;
   className?: string;
+  period?: string;
 }
 
+// period = "12months",
 const Leaderboard3 = ({
   title = "Top Products",
   description = "Top Products with Highest Revenues",
   className,
 }: Leaderboard3Props) => {
+  const period = usePeriod();
+
   const {
     data: stats,
     isLoading: statsIsLoading,
     error: statsError,
-  } = useDashboardStats();
+  } = useDashboardStats(period);
 
-  const products = stats?.this_period.sales.top_selling_products ?? [];
+  const products = stats?.[period].sales?.top_selling_products ?? [];
 
   return (
     <Card className={cn("max-w-md sm:max-w-2/6 w-full ", className)}>

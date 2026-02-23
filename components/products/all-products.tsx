@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ArrowLeft } from "lucide-react";
 import AnimatedWarehouse from "../animated-icon/animated-icon-wrapper";
 import { Button } from "../ui/button";
 import { useProducts } from "@/hooks/useProducts";
@@ -54,6 +55,10 @@ function Products() {
 
   return (
     <div className="py-5 px-7 w-full">
+      <Button variant="ghost">
+        <ArrowLeft />
+        Back
+      </Button>
       <Table>
         <TableCaption>Product List</TableCaption>
         <TableHeader>

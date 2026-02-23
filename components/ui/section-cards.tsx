@@ -13,17 +13,22 @@ import {
 } from "@/components/ui/card";
 import { Minus } from "lucide-react";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { useSearchParams } from "next/navigation";
+import { usePeriod } from "@/hooks/use-period-param";
 export function SectionCards() {
+  const period = usePeriod();
+
   const {
     data: trends,
     isLoading: TrendsIsLoading,
     error: TrendsError,
-  } = useTrends();
+  } = useTrends(period);
+
   const {
     data: stats,
     isLoading: statsIsLoading,
     error: statsError,
-  } = useDashboardStats();
+  } = useDashboardStats(period);
 
   const sale_trend = trends?.sales_trend;
   const profit_trend = trends?.profit_trend;
@@ -40,7 +45,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            Rs. {stats?.this_period.sales.total_sales}
+            Rs. {stats?.[period]?.sales.total_sales}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex gap-1 items-center">
@@ -81,7 +86,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>New Customers</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
-            {stats?.this_period.inventory.total_customers}
+            {stats?.[period]?.inventory.total_customers}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -124,7 +129,7 @@ export function SectionCards() {
           <CardDescription>Profit</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums">
             {/* Replace with actual profit value if available */}
-            Rs. {stats?.this_period.sales.total_profit_amount}
+            Rs. {stats?.[period]?.sales.total_profit_amount}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex gap-1 items-center">

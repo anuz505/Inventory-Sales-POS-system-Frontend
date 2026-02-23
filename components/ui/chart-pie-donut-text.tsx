@@ -17,6 +17,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { usePeriod } from "@/hooks/use-period-param";
 
 export const description = "A donut chart with text";
 
@@ -47,15 +48,16 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartPieDonutText() {
+  const period = usePeriod();
   const {
     data: stat,
     isLoading: statIsLoading,
     isError: statError,
-  } = useDashboardStats();
+  } = useDashboardStats(period);
 
   const chartData = React.useMemo(() => {
     const paymentMethods =
-      stat?.this_period?.sales?.highest_revenue_payment_method ?? [];
+      stat?.[period]?.sales?.highest_revenue_payment_method ?? [];
 
     return paymentMethods.map((item) => ({
       payment_method: item.payment_method,
@@ -75,7 +77,7 @@ export function ChartPieDonutText() {
     <Card className="flex flex-col min-w-1/6 w-md sm:w-2/6">
       <CardHeader className="items-center pb-0">
         <CardTitle>Revenue by Payment Method</CardTitle>
-        <CardDescription>This month</CardDescription>
+        <CardDescription>This {period}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -128,9 +130,6 @@ export function ChartPieDonutText() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="leading-none text-muted-foreground">
           Showing total revenue by payment method
         </div>

@@ -84,7 +84,7 @@ export interface InventoryStats {
 }
 
 export interface DashboardResponse {
-  this_period: {
+  [period: string]: {
     sales: SalesStats;
     inventory: InventoryStats;
   };
