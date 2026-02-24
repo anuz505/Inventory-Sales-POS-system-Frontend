@@ -10,57 +10,78 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { Funnel } from "lucide-react";
 import { useCategory } from "@/hooks/use-category";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { parseProductQuery } from "@/utils/product-params-parse";
 import { useSupplier } from "@/hooks/use-supplier";
 import {
   Select,
   SelectContent,
   SelectGroup,
+  SelectItem,
   SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 
 function FiltersProducts() {
-  const [offset, setOffset] = useState(0);
-  const limit = 20;
   const searchParam = useSearchParams();
-  const rawQuery: Record<string, string | undefined> = {
-    name: searchParam.get("name") ?? undefined,
-    sku: searchParam.get("sku") ?? undefined,
-    description: searchParam.get("description") ?? undefined,
-    category: searchParam.get("category") ?? undefined,
-    supplier: searchParam.get("supplier") ?? undefined,
-    min_selling_price: searchParam.get("min_selling_price") ?? undefined,
-    max_selling_price: searchParam.get("max_selling_price") ?? undefined,
-    min_cost_price: searchParam.get("min_cost_price") ?? undefined,
-    max_cost_price: searchParam.get("max_cost_price") ?? undefined,
-    min_stock: searchParam.get("min_stock") ?? undefined,
-    max_stock: searchParam.get("max_stock") ?? undefined,
-    low_stock: searchParam.get("low_stock") ?? undefined,
-    created_after: searchParam.get("created_after") ?? undefined,
-    created_before: searchParam.get("created_before") ?? undefined,
-    ordering: searchParam.get("ordering") ?? undefined,
-    limit: searchParam.get("limit") ?? undefined,
-    offset: searchParam.get("offset") ?? undefined,
-  };
-  const parsedQuery = parseProductQuery(rawQuery);
-  const params = parsedQuery.success ? parsedQuery.data : { limit, offset };
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParam.get("category") ?? "",
+  );
+  const [selectedSupplier, setSelectedSupplier] = useState<string>(
+    searchParam.get("supplier") ?? "",
+  );
   const router = useRouter();
   const handleApplyFilters = () => {
-    router.replace(`?${params.toString()}`);
+    const currentFilters = new URLSearchParams(searchParam.toString());
+    if (selectedCategory && selectedCategory !== "none") {
+      currentFilters.set("category", selectedCategory);
+    } else {
+      currentFilters.delete("category");
+    }
+    if (selectedSupplier && selectedSupplier !== "none") {
+      currentFilters.set("supplier", selectedSupplier);
+    } else {
+      currentFilters.delete("supplier");
+    }
+
+    router.replace(`?${currentFilters.toString()}`);
+  };
+  const handleClearFilters = () => {
+    setSelectedCategory("");
+    setSelectedSupplier("");
+    router.replace("?");
   };
   const {
     data: categories,
     isLoading: categoryLoading,
     error: categoryError,
+    fetchNextPage: fetchNextCategories,
+    hasNextPage: hasNextCategories,
+    isFetchingNextPage: isFetchingNextCategories,
   } = useCategory();
   const {
     data: suppliers,
     isLoading: suppliersLoading,
     error: supplierError,
+    fetchNextPage: fetchNextSuppliers,
+    hasNextPage: hasNextSuppliers,
+    isFetchingNextPage: isFetchingNextSuppliers,
   } = useSupplier();
+
+  const onCategoryEnd = useCallback(() => {
+    if (hasNextCategories && !isFetchingNextCategories) fetchNextCategories();
+  }, [hasNextCategories, isFetchingNextCategories, fetchNextCategories]);
+  const onSupplierEnd = useCallback(() => {
+    if (hasNextSuppliers && !isFetchingNextSuppliers) fetchNextSuppliers();
+  }, [hasNextSuppliers, isFetchingNextSuppliers, fetchNextSuppliers]);
+  const categorySentinel = useInfiniteScroll(onCategoryEnd, !categoryLoading);
+  const supplierSentinel = useInfiniteScroll(onSupplierEnd, !suppliersLoading);
+  const allCategories = categories?.pages.flatMap((page) => page.results) ?? [];
+  const allSuppliers = suppliers?.pages.flatMap((page) => page.results) ?? [];
+
   return (
     <div className="px-4 flex items-center justify-end pb-3 gap-3">
       <DropdownMenu>
@@ -70,28 +91,69 @@ function FiltersProducts() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="p-4 rounded-lg shadow-lg bg-white dark:bg-muted min-w-[220px]">
-          <DropdownMenuGroup className="position-relative">
+          <DropdownMenuGroup className="relative">
             <DropdownMenuLabel>Product Filters</DropdownMenuLabel>
-            <div className="flex flex-col gap-2 position-absolute overflow-scroll">
+            <div className="flex flex-col gap-2 overflow-y-auto">
               <DropdownMenuLabel>categories</DropdownMenuLabel>
-              <Select>
+              {categoryError && <div>Error fetching categories</div>}
+
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-full max-w-64">
                   <SelectValue placeholder="select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {categories?.pages
-                      ?.flatMap((page) => page.results)
-                      .map((category) => (
-                        <SelectLabel key={category.id}>
-                          {category.name}
-                        </SelectLabel>
-                      ))}
+                    <SelectLabel>Categories</SelectLabel>
+                    <SelectItem value="none">select</SelectItem>
+                    {allCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                    <div ref={categorySentinel} className="h-1 w-full">
+                      {isFetchingNextCategories && (
+                        <div className="px-2 py-1 text-sm text-muted-foreground">
+                          Loading more...
+                        </div>
+                      )}
+                    </div>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {supplierError && <div>Error Fetching Suppliers</div>}
+              <Select
+                value={selectedSupplier}
+                onValueChange={setSelectedSupplier}
+              >
+                <SelectTrigger className="w-full max-w-64">
+                  <SelectValue placeholder="select a supplier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="none">select</SelectItem>
+
+                    {allSuppliers.map((supplier) => (
+                      <SelectItem key={supplier.id} value={supplier.id}>
+                        {supplier.name}
+                      </SelectItem>
+                    ))}
+                    <div ref={supplierSentinel} className="h-1 w-full">
+                      {isFetchingNextSuppliers && (
+                        <div className="px-2 py-1 text-sm text-muted-foreground">
+                          Loading more...
+                        </div>
+                      )}
+                    </div>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
           </DropdownMenuGroup>
+          <Button onClick={handleApplyFilters}> Apply Filters</Button>
+          <Button onClick={handleClearFilters}>Clear Filters</Button>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

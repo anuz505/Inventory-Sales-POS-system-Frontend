@@ -20,7 +20,7 @@ interface SupplierResponse {
 
 const fetchSuppliers = async ({ pageParam = 0 }) => {
   const res = await axios.get<SupplierResponse>(
-    "http://localhost:8000/api-inventory/suppliers",
+    "http://localhost:8000/api-inventory/supplier",
     {
       params: {
         limit: 10,

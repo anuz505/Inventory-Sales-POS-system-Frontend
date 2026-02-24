@@ -18,7 +18,7 @@ interface CategoryResponse {
 
 const fetchCategories = async () => {
   const res = await axios.get<CategoryResponse>(
-    "http://localhost:8000/api-inventory/categories",
+    "http://localhost:8000/api-inventory/category",
   );
   return res.data;
 };

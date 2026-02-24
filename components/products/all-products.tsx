@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -17,6 +17,7 @@ import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import { parseProductQuery } from "@/utils/product-params-parse";
+import FiltersProducts from "../filters/filtersproducts";
 function Products() {
   const [offset, setOffset] = useState(0);
   const limit = 20;
@@ -44,6 +45,12 @@ function Products() {
 
   const parsedQuery = parseProductQuery(rawQuery);
   const params = parsedQuery.success ? parsedQuery.data : { limit, offset };
+
+  useEffect(() => {
+    setOffset(0);
+    setAllProducts([]);
+  }, [searchParam.toString()]);
+
   const {
     data: products,
     isLoading,
@@ -89,6 +96,7 @@ function Products() {
         <ArrowLeft />
         Back
       </Button>
+      <FiltersProducts />
       <Table>
         <TableCaption>Product List</TableCaption>
         <TableHeader>
