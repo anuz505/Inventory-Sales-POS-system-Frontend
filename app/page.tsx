@@ -5,7 +5,7 @@ import { ChartAreaInteractive } from "@/components/charts/profit-sales-chart";
 import SidebarWrapper from "@/providers/sidebar-provider";
 // import RevenueMarginChart from "@/components/charts/composed-chart";
 import RevenueProfitChart from "@/components/charts/chart";
-import FiltersDashboard from "@/components/common/filtersdashboard";
+import FiltersDashboard from "@/components/filters/filtersdashboard";
 export default function Home() {
   return (
     <div>

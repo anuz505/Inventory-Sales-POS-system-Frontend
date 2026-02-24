@@ -15,16 +15,44 @@ import { Button } from "../ui/button";
 import { useProducts } from "@/hooks/useProducts";
 import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { parseProductQuery } from "@/utils/product-params-parse";
 function Products() {
   const [offset, setOffset] = useState(0);
   const limit = 20;
   const [allProducts, setAllProducts] = useState<any[]>([]);
+  const searchParam = useSearchParams();
+  const rawQuery: Record<string, string | undefined> = {
+    name: searchParam.get("name") ?? undefined,
+    sku: searchParam.get("sku") ?? undefined,
+    description: searchParam.get("description") ?? undefined,
+    category: searchParam.get("category") ?? undefined,
+    supplier: searchParam.get("supplier") ?? undefined,
+    min_selling_price: searchParam.get("min_selling_price") ?? undefined,
+    max_selling_price: searchParam.get("max_selling_price") ?? undefined,
+    min_cost_price: searchParam.get("min_cost_price") ?? undefined,
+    max_cost_price: searchParam.get("max_cost_price") ?? undefined,
+    min_stock: searchParam.get("min_stock") ?? undefined,
+    max_stock: searchParam.get("max_stock") ?? undefined,
+    low_stock: searchParam.get("low_stock") ?? undefined,
+    created_after: searchParam.get("created_after") ?? undefined,
+    created_before: searchParam.get("created_before") ?? undefined,
+    ordering: searchParam.get("ordering") ?? undefined,
+    limit: searchParam.get("limit") ?? undefined,
+    offset: searchParam.get("offset") ?? undefined,
+  };
+
+  const parsedQuery = parseProductQuery(rawQuery);
+  const params = parsedQuery.success ? parsedQuery.data : { limit, offset };
   const {
     data: products,
     isLoading,
     error,
-  } = useProducts({ limit: limit.toString(), offset: offset.toString() });
+  } = useProducts({
+    ...params,
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
   const router = useRouter();
   React.useEffect(() => {
     if (products?.results) {
