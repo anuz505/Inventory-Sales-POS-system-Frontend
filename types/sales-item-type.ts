@@ -1,6 +1,7 @@
 export type SalesItemType = {
   id: string;
   quantity: number;
+  unit_price: number;
   discount_amount: number;
   subtotal: number;
   created_at: string;
