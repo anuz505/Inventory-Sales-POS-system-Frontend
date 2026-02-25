@@ -2,8 +2,9 @@
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { usePeriod } from "@/hooks/use-period-param";
 import { Leaderboard3 } from "@/components/products/leaderboard3";
-import { ChartPieDonutText } from "./ui/chart-pie-donut-text";
+import { ChartPieDonutText } from "../ui/chart-pie-donut-text";
 import { FilterParams } from "@/hooks/use-revenue-profit-chart";
+import { TopCustomerList } from "./top-customers";
 
 export default function DashboardDataFlow() {
   const params: FilterParams = usePeriod();
@@ -19,6 +20,12 @@ export default function DashboardDataFlow() {
           params={params}
         />
         <ChartPieDonutText
+          data={data}
+          isLoading={isLoading}
+          error={error}
+          params={params}
+        />
+        <TopCustomerList
           data={data}
           isLoading={isLoading}
           error={error}

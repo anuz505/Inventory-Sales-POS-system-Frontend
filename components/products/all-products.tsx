@@ -57,6 +57,7 @@ function Products() {
     error,
   } = useProducts({
     ...params,
+
     limit: limit.toString(),
     offset: offset.toString(),
   });

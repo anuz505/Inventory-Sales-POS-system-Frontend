@@ -10,7 +10,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { Funnel } from "lucide-react";
 import { useCategory } from "@/hooks/use-category";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSupplier } from "@/hooks/use-supplier";
 import {
   Select,
@@ -22,12 +22,17 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { Input } from "../ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
 
 function FiltersProducts() {
   const searchParam = useSearchParams();
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParam.get("category") ?? "",
+  );
+  const [SearchName, setSearchName] = useState<string>(
+    searchParam.get("name") ?? "",
   );
   const [selectedSupplier, setSelectedSupplier] = useState<string>(
     searchParam.get("supplier") ?? "",
@@ -111,6 +116,7 @@ function FiltersProducts() {
     setLowStock(false);
     setCreatedAfter("");
     setCreatedBefore("");
+    setSearchName("");
     router.replace("?");
   };
   const {
@@ -141,8 +147,33 @@ function FiltersProducts() {
   const allCategories = categories?.pages.flatMap((page) => page.results) ?? [];
   const allSuppliers = suppliers?.pages.flatMap((page) => page.results) ?? [];
 
+  const debounceSearch = useDebounce(SearchName, 500);
+
+  useEffect(() => {
+    const current = searchParam.get("name") ?? "";
+    if (debounceSearch === current) return;
+    const currentFilters = new URLSearchParams(searchParam.toString());
+    if (debounceSearch) {
+      currentFilters.set("name", debounceSearch);
+    } else {
+      currentFilters.delete("name");
+    }
+    router.replace(`?${currentFilters.toString()}`);
+  }, [debounceSearch]);
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchName(e.target.value);
+  };
   return (
-    <div className="px-4 flex items-center justify-end pb-3 gap-3">
+    <div className="px-4 flex items-center justify-end py-6 gap-3">
+      <Input
+        value={SearchName}
+        type="text"
+        placeholder="Search Products"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          handleSearchInput(e)
+        }
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

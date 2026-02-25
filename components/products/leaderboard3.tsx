@@ -19,7 +19,6 @@ interface Leaderboard3Props {
   params: { period?: string; from?: string };
 }
 
-// period = "12months",
 const Leaderboard3 = ({
   title = "Top Products",
   description = "Top Products with Highest Revenues",
@@ -29,7 +28,6 @@ const Leaderboard3 = ({
   error,
   params,
 }: Leaderboard3Props) => {
-  // Only use data, isLoading, error, and params from props
   let products: any[] = [];
   if (params?.period) {
     products = data?.[params.period]?.sales?.top_selling_products ?? [];
