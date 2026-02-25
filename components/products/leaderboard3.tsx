@@ -7,13 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
-import { usePeriod } from "@/hooks/use-period-param";
+
 interface Leaderboard3Props {
   title?: string;
   description?: string;
   className?: string;
   period?: string;
+  data: any;
+  isLoading?: boolean;
+  error?: any;
+  params: { period?: string; from?: string };
 }
 
 // period = "12months",
@@ -21,19 +24,17 @@ const Leaderboard3 = ({
   title = "Top Products",
   description = "Top Products with Highest Revenues",
   className,
+  data,
+  isLoading,
+  error,
+  params,
 }: Leaderboard3Props) => {
-  const params = usePeriod();
-
-  const {
-    data: stats,
-    isLoading: statsIsLoading,
-    error: statsError,
-  } = useDashboardStats(params);
+  // Only use data, isLoading, error, and params from props
   let products: any[] = [];
-  if (params.period) {
-    products = stats?.[params.period]?.sales?.top_selling_products ?? [];
-  } else if (params.from) {
-    products = stats?.[params.from]?.sales?.top_selling_products ?? [];
+  if (params?.period) {
+    products = data?.[params.period]?.sales?.top_selling_products ?? [];
+  } else if (params?.from) {
+    products = data?.[params.from]?.sales?.top_selling_products ?? [];
   }
 
   return (
@@ -43,10 +44,10 @@ const Leaderboard3 = ({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {statsIsLoading && (
+        {isLoading && (
           <p className="text-sm text-muted-foreground">Loading...</p>
         )}
-        {statsError && (
+        {error && (
           <p className="text-sm text-red-500">Failed to load products.</p>
         )}
         <div className="space-y-4">

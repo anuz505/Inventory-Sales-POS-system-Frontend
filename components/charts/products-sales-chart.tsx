@@ -36,6 +36,7 @@ function buildChartData(
   const aggregated: Record<string, number> = {};
   for (const sale of saleitem) {
     const date = sale.created_at.split("T")[0];
+
     for (const item of sale.items) {
       if (item.product === productId) {
         aggregated[date] = aggregated[date] ?? 0 + item.quantity;

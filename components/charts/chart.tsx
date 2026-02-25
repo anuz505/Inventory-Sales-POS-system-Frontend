@@ -32,15 +32,7 @@ const RevenueProfitChart = () => {
         </div>
       </CardHeader>
       <ResponsiveContainer width="100%" height={350}>
-        <ComposedChart
-          style={{
-            width: "100%",
-            maxWidth: "700px",
-            maxHeight: "70vh",
-            aspectRatio: 1.618,
-          }}
-          data={RevenueProfit}
-        >
+        <ComposedChart data={RevenueProfit}>
           <CartesianGrid stroke="#f5f5f5" />
           <XAxis dataKey="month" />
           <YAxis
@@ -56,14 +48,14 @@ const RevenueProfitChart = () => {
           <Bar
             yAxisId="left"
             dataKey="revenue"
-            fill="var(--primary)"
+            fill="var(--revenue )"
             barSize={60}
             radius={[6, 6, 0, 0]}
           />
           <Line
             yAxisId="right"
             dataKey="profit_margin"
-            stroke="black"
+            stroke="var(--profit)"
             strokeWidth={3}
             dot={{ r: 4 }}
           />

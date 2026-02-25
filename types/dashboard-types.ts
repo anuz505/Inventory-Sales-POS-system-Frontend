@@ -78,8 +78,10 @@ export interface LowSupplyProduct {
 }
 
 export interface InventoryStats {
+  total_products: number;
   total_refunds: RefundSummary[];
-  low_supply_products: LowSupplyProduct[];
+  total_low_supply_products: number;
+  low_supply_percentage: number;
   total_customers: number;
 }
 

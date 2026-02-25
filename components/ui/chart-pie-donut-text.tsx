@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import { TrendingUp } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 import {
   Card,
@@ -16,10 +15,18 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
-import { usePeriod } from "@/hooks/use-period-param";
+
+import { FilterParams } from "@/hooks/use-revenue-profit-chart";
 
 export const description = "A donut chart with text";
+
+interface CategorychartPropTypes {
+  period?: string;
+  data: any;
+  isLoading?: boolean;
+  error?: any;
+  params: FilterParams;
+}
 
 const chartConfig = {
   total_sales: {
@@ -47,14 +54,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartPieDonutText() {
-  const params = usePeriod();
-  const {
-    data: stat,
-    isLoading: statIsLoading,
-    isError: statError,
-  } = useDashboardStats(params);
-
+export function ChartPieDonutText({
+  data,
+  isLoading,
+  error,
+  params,
+}: CategorychartPropTypes) {
+  const stat = data;
   const chartData = React.useMemo(() => {
     let paymentMethods: any[] = [];
     if (params.period) {
@@ -70,14 +76,14 @@ export function ChartPieDonutText() {
       total_sales: item.total_sales,
       fill: `var(--color-${item.payment_method})`,
     }));
-  }, [stat]);
+  }, [stat, params]);
 
   const totalSales = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.total_sales, 0);
   }, [chartData]);
 
-  if (statIsLoading) return <div>Loading...</div>;
-  if (statError) return <div>Error loading chart data.</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading chart data.</div>;
 
   return (
     <Card className="flex flex-col min-w-1/6 w-md sm:w-2/6">
