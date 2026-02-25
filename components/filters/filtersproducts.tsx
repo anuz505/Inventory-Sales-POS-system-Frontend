@@ -1,4 +1,4 @@
-"use client ";
+"use client";
 import { Button } from "../ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -27,52 +27,66 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 function FiltersProducts() {
   const searchParam = useSearchParams();
+  const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    searchParam.get("category") ?? "",
+  const getParam = (key: string) => searchParam.get(key) ?? "";
+
+  const [searchName, setSearchName] = useState(getParam("name"));
+  const [selectedCategory, setSelectedCategory] = useState(
+    getParam("category"),
   );
-  const [SearchName, setSearchName] = useState<string>(
-    searchParam.get("name") ?? "",
+  const [selectedSupplier, setSelectedSupplier] = useState(
+    getParam("supplier"),
   );
-  const [selectedSupplier, setSelectedSupplier] = useState<string>(
-    searchParam.get("supplier") ?? "",
+  const [sortSelectValue, setSortSelectValue] = useState(getParam("ordering"));
+  const [minSellingPrice, setMinSellingPrice] = useState(
+    getParam("min_selling_price"),
   );
-  const [selectedSku, setSelectedSku] = useState<string>(
-    searchParam.get("sku") ?? "",
+  const [maxSellingPrice, setMaxSellingPrice] = useState(
+    getParam("max_selling_price"),
   );
-  const [minSellingPrice, setMinSellingPrice] = useState<string>(
-    searchParam.get("min_selling_price") ?? "",
-  );
-  const [maxSellingPrice, setMaxSellingPrice] = useState<string>(
-    searchParam.get("max_selling_price") ?? "",
-  );
-  const [minCostPrice, setMinCostPrice] = useState<string>(
-    searchParam.get("min_cost_price") ?? "",
-  );
-  const [maxCostPrice, setMaxCostPrice] = useState<string>(
-    searchParam.get("max_cost_price") ?? "",
-  );
-  const [minStock, setMinStock] = useState<string>(
-    searchParam.get("min_stock") ?? "",
-  );
-  const [maxStock, setMaxStock] = useState<string>(
-    searchParam.get("max_stock") ?? "",
-  );
-  const [lowStock, setLowStock] = useState<boolean>(
+  const [minCostPrice, setMinCostPrice] = useState(getParam("min_cost_price"));
+  const [maxCostPrice, setMaxCostPrice] = useState(getParam("max_cost_price"));
+  const [minStock, setMinStock] = useState(getParam("min_stock"));
+  const [maxStock, setMaxStock] = useState(getParam("max_stock"));
+  const [lowStock, setLowStock] = useState(
     searchParam.get("low_stock") === "true",
   );
-  const [createdAfter, setCreatedAfter] = useState<string>(
-    searchParam.get("created_after") ?? "",
-  );
-  const [createdBefore, setCreatedBefore] = useState<string>(
-    searchParam.get("created_before") ?? "",
+  const [createdAfter, setCreatedAfter] = useState(getParam("created_after"));
+  const [createdBefore, setCreatedBefore] = useState(
+    getParam("created_before"),
   );
 
-  const router = useRouter();
+  // Debounced search — updates URL automatically
+  const debounceSearch = useDebounce(searchName, 500);
+  useEffect(() => {
+    const current = searchParam.get("name") ?? "";
+    if (debounceSearch === current) return;
+    const params = new URLSearchParams(searchParam.toString());
+    if (debounceSearch) params.set("name", debounceSearch);
+    else params.delete("name");
+    router.replace(`?${params.toString()}`);
+  }, [debounceSearch]);
+
   const handleApplyFilters = () => {
-    const currentFilters = new URLSearchParams(searchParam.toString());
-    // Handle string/number/date filters
-    const filterEntries = [
+    const params = new URLSearchParams(searchParam.toString());
+
+    // Sort / ordering
+    if (sortSelectValue && sortSelectValue !== "none")
+      params.set("ordering", sortSelectValue);
+    else params.delete("ordering");
+
+    // Category & Supplier
+    if (selectedCategory && selectedCategory !== "none")
+      params.set("category", selectedCategory);
+    else params.delete("category");
+
+    if (selectedSupplier && selectedSupplier !== "none")
+      params.set("supplier", selectedSupplier);
+    else params.delete("supplier");
+
+    // Numeric / date filters
+    const fields: [string, string][] = [
       ["min_selling_price", minSellingPrice],
       ["max_selling_price", maxSellingPrice],
       ["min_cost_price", minCostPrice],
@@ -82,31 +96,22 @@ function FiltersProducts() {
       ["created_after", createdAfter],
       ["created_before", createdBefore],
     ];
-    // Category and supplier
-    if (selectedCategory && selectedCategory !== "none") {
-      currentFilters.set("category", selectedCategory);
-    } else {
-      currentFilters.delete("category");
-    }
-    if (selectedSupplier && selectedSupplier !== "none") {
-      currentFilters.set("supplier", selectedSupplier);
-    } else {
-      currentFilters.delete("supplier");
-    }
-    // Loop for other filters
-    filterEntries.forEach(([key, value]) => {
-      if (value) currentFilters.set(key, value);
-      else currentFilters.delete(key);
+    fields.forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
     });
-    // Boolean filter
-    if (lowStock) currentFilters.set("low_stock", "true");
-    else currentFilters.delete("low_stock");
 
-    router.replace(`?${currentFilters.toString()}`);
+    // Boolean
+    if (lowStock) params.set("low_stock", "true");
+    else params.delete("low_stock");
+
+    router.replace(`?${params.toString()}`);
   };
+
   const handleClearFilters = () => {
     setSelectedCategory("");
     setSelectedSupplier("");
+    setSortSelectValue("");
     setMinSellingPrice("");
     setMaxSellingPrice("");
     setMinCostPrice("");
@@ -119,6 +124,8 @@ function FiltersProducts() {
     setSearchName("");
     router.replace("?");
   };
+
+  // Categories infinite scroll
   const {
     data: categories,
     isLoading: categoryLoading,
@@ -127,6 +134,8 @@ function FiltersProducts() {
     hasNextPage: hasNextCategories,
     isFetchingNextPage: isFetchingNextCategories,
   } = useCategory();
+
+  // Suppliers infinite scroll
   const {
     data: suppliers,
     isLoading: suppliersLoading,
@@ -139,41 +148,26 @@ function FiltersProducts() {
   const onCategoryEnd = useCallback(() => {
     if (hasNextCategories && !isFetchingNextCategories) fetchNextCategories();
   }, [hasNextCategories, isFetchingNextCategories, fetchNextCategories]);
+
   const onSupplierEnd = useCallback(() => {
     if (hasNextSuppliers && !isFetchingNextSuppliers) fetchNextSuppliers();
   }, [hasNextSuppliers, isFetchingNextSuppliers, fetchNextSuppliers]);
+
   const categorySentinel = useInfiniteScroll(onCategoryEnd, !categoryLoading);
   const supplierSentinel = useInfiniteScroll(onSupplierEnd, !suppliersLoading);
+
   const allCategories = categories?.pages.flatMap((page) => page.results) ?? [];
   const allSuppliers = suppliers?.pages.flatMap((page) => page.results) ?? [];
 
-  const debounceSearch = useDebounce(SearchName, 500);
-
-  useEffect(() => {
-    const current = searchParam.get("name") ?? "";
-    if (debounceSearch === current) return;
-    const currentFilters = new URLSearchParams(searchParam.toString());
-    if (debounceSearch) {
-      currentFilters.set("name", debounceSearch);
-    } else {
-      currentFilters.delete("name");
-    }
-    router.replace(`?${currentFilters.toString()}`);
-  }, [debounceSearch]);
-
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchName(e.target.value);
-  };
   return (
     <div className="px-4 flex items-center justify-end py-6 gap-3">
       <Input
-        value={SearchName}
+        value={searchName}
         type="text"
         placeholder="Search Products"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          handleSearchInput(e)
-        }
+        onChange={(e) => setSearchName(e.target.value)}
       />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -183,13 +177,37 @@ function FiltersProducts() {
             <Funnel className="w-4 h-4 mr-1" /> Filter
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent className="p-6 rounded-xl shadow-2xl bg-white dark:bg-zinc-900 min-w-[300px] border border-gray-200 dark:border-gray-700 z-50">
-          <DropdownMenuGroup className="relative z-1000">
-            <DropdownMenuLabel className="text-lg font-semibold mb-2">
+          {/* Sort */}
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="font-bold text-lg mb-2">
+              Sort
+            </DropdownMenuLabel>
+            <Select value={sortSelectValue} onValueChange={setSortSelectValue}>
+              <SelectTrigger className="w-full max-w-64 rounded-md border border-gray-300 focus:ring-2 focus:ring-primary">
+                <SelectValue placeholder="Select sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="sku">SKU</SelectItem>
+                <SelectItem value="selling_price">Selling Price</SelectItem>
+                <SelectItem value="cost_price">Cost Price</SelectItem>
+                <SelectItem value="stock_quantity">Stock Quantity</SelectItem>
+                <SelectItem value="created_at">Date</SelectItem>
+              </SelectContent>
+            </Select>
+          </DropdownMenuGroup>
+
+          {/* Filters */}
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="text-lg font-semibold mt-4 mb-2">
               Product Filters
             </DropdownMenuLabel>
+
             <div className="flex flex-col gap-4 overflow-y-auto max-h-[60vh]">
-              {/* Price Filters */}
+              {/* Price */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <DropdownMenuLabel className="text-sm font-medium mb-1">
@@ -240,7 +258,8 @@ function FiltersProducts() {
                   />
                 </div>
               </div>
-              {/* Stock Filters */}
+
+              {/* Stock */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <DropdownMenuLabel className="text-sm font-medium mb-1">
@@ -266,7 +285,7 @@ function FiltersProducts() {
                     placeholder="Max"
                   />
                 </div>
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex items-center gap-2 mt-2 col-span-2">
                   <input
                     type="checkbox"
                     id="lowStock"
@@ -278,7 +297,8 @@ function FiltersProducts() {
                   </label>
                 </div>
               </div>
-              {/* Date Filters */}
+
+              {/* Dates */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <DropdownMenuLabel className="text-sm font-medium mb-1">
@@ -303,15 +323,16 @@ function FiltersProducts() {
                   />
                 </div>
               </div>
-              {/* Category Filter */}
+
+              {/* Category */}
               <div>
                 <DropdownMenuLabel className="text-sm font-medium mb-1">
                   Category
                 </DropdownMenuLabel>
                 {categoryError && (
-                  <div className="text-red-500 text-xs mb-1">
+                  <p className="text-red-500 text-xs mb-1">
                     Error fetching categories
-                  </div>
+                  </p>
                 )}
                 <Select
                   value={selectedCategory}
@@ -331,26 +352,27 @@ function FiltersProducts() {
                       ))}
                       <div ref={categorySentinel} className="h-1 w-full">
                         {isFetchingNextCategories && (
-                          <div className="px-2 py-1 text-xs text-muted-foreground">
+                          <p className="px-2 py-1 text-xs text-muted-foreground">
                             Loading more...
-                          </div>
+                          </p>
                         )}
                       </div>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
-              {/* Divider */}
+
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
-              {/* Supplier Filter */}
+
+              {/* Supplier */}
               <div>
                 <DropdownMenuLabel className="text-sm font-medium mb-1">
                   Supplier
                 </DropdownMenuLabel>
                 {supplierError && (
-                  <div className="text-red-500 text-xs mb-1">
+                  <p className="text-red-500 text-xs mb-1">
                     Error fetching suppliers
-                  </div>
+                  </p>
                 )}
                 <Select
                   value={selectedSupplier}
@@ -362,7 +384,6 @@ function FiltersProducts() {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Suppliers</SelectLabel>
-
                       <SelectItem value="none">None</SelectItem>
                       {allSuppliers.map((supplier) => (
                         <SelectItem key={supplier.id} value={supplier.id}>
@@ -371,18 +392,19 @@ function FiltersProducts() {
                       ))}
                       <div ref={supplierSentinel} className="h-1 w-full">
                         {isFetchingNextSuppliers && (
-                          <div className="px-2 py-1 text-xs text-muted-foreground">
+                          <p className="px-2 py-1 text-xs text-muted-foreground">
                             Loading more...
-                          </div>
+                          </p>
                         )}
                       </div>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
-              {/* Divider */}
+
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
-              {/* Buttons */}
+
+              {/* Actions */}
               <div className="flex gap-2 mt-2 justify-end">
                 <Button
                   onClick={handleApplyFilters}
