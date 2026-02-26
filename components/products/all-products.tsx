@@ -28,7 +28,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import CommonForm from "../common/forms";
-import { useCategory } from "@/hooks/use-category";
+import { useCategories, useCategory } from "@/hooks/use-category";
 import { useSuppliers } from "@/hooks/use-supplier";
 import { productFormControls } from "@/config/products-form-controls";
 
@@ -111,7 +111,7 @@ function Products() {
   const totalCount = products?.count || 0;
   const hasMore = offset + limit < totalCount;
 
-  const { data: categories } = useCategory();
+  const { data: categories } = useCategories();
   const categoryOptions: { id: string; label: string }[] =
     categories?.pages.flatMap((page) =>
       page.results.map((c) => ({ id: String(c.id), label: c.name })),
