@@ -1,0 +1,190 @@
+"use client";
+import { Button } from "../ui/button";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Funnel } from "lucide-react";
+import { Input } from "../ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useEffect, useState } from "react";
+
+function FiltersSuppliers() {
+  const searchParam = useSearchParams();
+  const router = useRouter();
+
+  const getParam = (key: string) => searchParam.get(key) ?? "";
+
+  const [searchName, setSearchName] = useState(getParam("name"));
+  const [email, setEmail] = useState(getParam("email"));
+  const [phone, setPhone] = useState(getParam("phone"));
+  const [address, setAddress] = useState(getParam("address"));
+  const [createdAfter, setCreatedAfter] = useState(getParam("created_after"));
+  const [createdBefore, setCreatedBefore] = useState(
+    getParam("created_before"),
+  );
+
+  // Debounced name search — updates URL automatically
+  const debouncedName = useDebounce(searchName, 500);
+  useEffect(() => {
+    const current = searchParam.get("name") ?? "";
+    if (debouncedName === current) return;
+    const params = new URLSearchParams(searchParam.toString());
+    if (debouncedName) params.set("name", debouncedName);
+    else params.delete("name");
+    router.replace(`?${params.toString()}`);
+  }, [debouncedName]);
+
+  const handleApplyFilters = () => {
+    const params = new URLSearchParams(searchParam.toString());
+
+    const fields: [string, string][] = [
+      ["email", email],
+      ["phone", phone],
+      ["address", address],
+      ["created_after", createdAfter],
+      ["created_before", createdBefore],
+    ];
+
+    fields.forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+
+    router.replace(`?${params.toString()}`);
+  };
+
+  const handleClearFilters = () => {
+    setSearchName("");
+    setEmail("");
+    setPhone("");
+    setAddress("");
+    setCreatedAfter("");
+    setCreatedBefore("");
+    router.replace("?");
+  };
+
+  return (
+    <div className="px-4 flex items-center justify-end py-6 gap-3">
+      <Input
+        value={searchName}
+        type="text"
+        placeholder="Search Suppliers"
+        onChange={(e) => setSearchName(e.target.value)}
+      />
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="flex items-center gap-1 shadow-sm rounded-lg"
+          >
+            <Funnel className="w-4 h-4 mr-1" /> Filter
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="p-6 rounded-xl shadow-2xl bg-white dark:bg-zinc-900 min-w-[300px] border border-gray-200 dark:border-gray-700 z-50">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="font-bold text-lg mb-3">
+              Supplier Filters
+            </DropdownMenuLabel>
+
+            <div className="flex flex-col gap-4 overflow-y-auto max-h-[60vh]">
+              {/* Email */}
+              <div>
+                <DropdownMenuLabel className="text-sm font-medium mb-1">
+                  Email
+                </DropdownMenuLabel>
+                <Input
+                  type="email"
+                  placeholder="supplier@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <DropdownMenuLabel className="text-sm font-medium mb-1">
+                  Phone
+                </DropdownMenuLabel>
+                <Input
+                  type="text"
+                  placeholder="+1234567890"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
+              {/* Address */}
+              <div>
+                <DropdownMenuLabel className="text-sm font-medium mb-1">
+                  Address
+                </DropdownMenuLabel>
+                <Input
+                  type="text"
+                  placeholder="Search by address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+
+              <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <DropdownMenuLabel className="text-sm font-medium mb-1">
+                    Created After
+                  </DropdownMenuLabel>
+                  <input
+                    type="date"
+                    className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:ring-2 focus:ring-primary"
+                    value={createdAfter}
+                    onChange={(e) => setCreatedAfter(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <DropdownMenuLabel className="text-sm font-medium mb-1">
+                    Created Before
+                  </DropdownMenuLabel>
+                  <input
+                    type="date"
+                    className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:ring-2 focus:ring-primary"
+                    value={createdBefore}
+                    onChange={(e) => setCreatedBefore(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+
+              {/* Actions */}
+              <div className="flex gap-2 mt-2 justify-end">
+                <Button
+                  onClick={handleApplyFilters}
+                  className="rounded-md px-4 py-2 shadow-sm"
+                >
+                  Apply Filters
+                </Button>
+                <Button
+                  onClick={handleClearFilters}
+                  variant="outline"
+                  className="rounded-md px-4 py-2 border border-red-400 text-red-600 hover:bg-red-50 transition-all shadow-sm"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </div>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+export default FiltersSuppliers;

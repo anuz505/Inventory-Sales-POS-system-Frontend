@@ -1,5 +1,5 @@
 "use client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 interface SupplierTypes {
@@ -11,6 +11,7 @@ interface SupplierTypes {
   created_at: string;
   updated_at: string;
 }
+
 interface SupplierResponse {
   count: number;
   next: string | null;
@@ -18,23 +19,53 @@ interface SupplierResponse {
   results: SupplierTypes[];
 }
 
-const fetchSuppliers = async ({ pageParam = 0 }) => {
+interface SupplierParams {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  created_after?: string;
+  created_before?: string;
+}
+
+const fetchSuppliers = async ({
+  pageParam = 0,
+  params,
+}: {
+  pageParam: number;
+  params: SupplierParams;
+}) => {
   const res = await axios.get<SupplierResponse>(
     "http://localhost:8000/api-inventory/supplier",
     {
       params: {
         limit: 10,
         offset: pageParam,
+        ...params,
       },
     },
   );
   return res.data;
 };
 
-export function useSupplier() {
+const fetchSupplier = async (id: string) => {
+  const res = await axios.get<SupplierTypes>(
+    `http://localhost:8000/api-inventory/supplier/${id}`,
+  );
+  return res.data;
+};
+
+export function useSupplier(id: string) {
+  return useQuery({
+    queryKey: ["supplier", id],
+    queryFn: () => fetchSupplier(id),
+  });
+}
+
+export function useSuppliers(params: SupplierParams = {}) {
   return useInfiniteQuery({
-    queryKey: ["suppliers"],
-    queryFn: fetchSuppliers,
+    queryKey: ["suppliers", params],
+    queryFn: ({ pageParam }) => fetchSuppliers({ pageParam, params }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       if (!lastPage.next) return undefined;

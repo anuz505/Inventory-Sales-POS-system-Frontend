@@ -1,5 +1,6 @@
 export type SalesItemType = {
   id: string;
+  product_name: string;
   quantity: number;
   unit_price: number;
   discount_amount: number;

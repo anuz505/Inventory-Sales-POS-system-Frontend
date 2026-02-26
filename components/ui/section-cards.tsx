@@ -49,7 +49,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl">
-            {currentStats?.sales?.total_sales ?? 0}
+            Rs.{currentStats?.sales?.total_sales ?? 0}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -88,7 +88,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Profit</CardDescription>
           <CardTitle className="text-2xl">
-            Rs. {currentStats?.sales?.total_profit_amount ?? 0}
+            Rs.{currentStats?.sales?.total_profit_amount ?? 0}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">

@@ -11,10 +11,7 @@ export const navigationData = [
     title: "Sales",
     href: "/sales",
   },
-  {
-    title: "Inventory",
-    href: "/inventory",
-  },
+
   {
     title: "Customers",
     href: "/customers",

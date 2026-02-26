@@ -13,6 +13,7 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { navigationData } from "@/config/navbar-config";
+import { CircleChevronDown } from "lucide-react";
 
 export function AppSidebar() {
   const {
@@ -30,19 +31,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <SidebarMenuButton>
-                  <h2 className="px-4 py-2 font-bold text-lg">My App</h2>
-                </SidebarMenuButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content className="w-[--radix-popper-anchor-width]">
-                <DropdownMenu.Item>
-                  <span>Hello</span>
-                  {/* TODO */}
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            <DropdownMenu.Root></DropdownMenu.Root>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -59,6 +48,34 @@ export function AppSidebar() {
                 </a>
               </SidebarMenuItem>
             ))}
+            <SidebarMenuItem className="overflow-hidden">
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <SidebarMenuButton className=" block px-4 pb-2 text-lg items-center hover:bg-primary hover:text-primary-foreground  transition-all  rounded">
+                    <h2>Inventory</h2>
+                    <CircleChevronDown />
+                  </SidebarMenuButton>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item>
+                    <a
+                      href="/stock-movement"
+                      className="block px-4 py-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all  rounded"
+                    >
+                      Stock Movement
+                    </a>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item>
+                    <a
+                      href="/suppliers"
+                      className="block px-4 py-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all  rounded"
+                    >
+                      Suppliers
+                    </a>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
