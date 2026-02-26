@@ -4,7 +4,7 @@ import { useState } from "react";
 import CommonForm from "../common/forms";
 import type { LoginFormDataType } from "@/types/auth-type";
 import { useLoginUserMutation } from "@/store/auth-slice/index";
-import { signInFormControls } from "@/config/form-controls";
+import { signInFormControls } from "@/config/auth-form-controls";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import usePublicRoute from "@/hooks/PublicRoute";

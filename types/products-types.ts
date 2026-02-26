@@ -40,3 +40,14 @@ export interface ProductType {
   created_at: string;
   updated_at: string;
 }
+export interface CreateProductType {
+  name: string;
+  sku: string;
+  description: string;
+  category: string;
+  supplier: string;
+  cost_price: string;
+  selling_price: string;
+  stock_quantity: number;
+  low_stock_limit: number;
+}

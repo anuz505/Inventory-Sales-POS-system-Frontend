@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import CommonForm from "../common/forms";
 import { useRegisterUserMutation } from "@/store/auth-slice/try";
-import { signUpFormControls } from "@/config/form-controls";
+import { signUpFormControls } from "@/config/auth-form-controls";
 import type { RegisterFormDataType } from "@/types/auth-type";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";

@@ -2,13 +2,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-interface CategoryTypes {
+export interface CategoryTypes {
   id: string;
   name: string;
   description: string;
   created_at: string;
   updated_at: string;
 }
+
 interface CategoryResponse {
   count: number;
   next: string | null;
@@ -16,9 +17,15 @@ interface CategoryResponse {
   results: CategoryTypes[];
 }
 
-const fetchCategories = async () => {
+const fetchCategories = async ({ pageParam = 0 }: { pageParam: number }) => {
   const res = await axios.get<CategoryResponse>(
     "http://localhost:8000/api-inventory/category",
+    {
+      params: {
+        limit: 10,
+        offset: pageParam,
+      },
+    },
   );
   return res.data;
 };
