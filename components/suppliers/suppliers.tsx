@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,25 +9,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Button } from "../ui/button";
-import { useSuppliers } from "@/hooks/use-supplier";
+import { useSuppliers, useCreateSupplier } from "@/hooks/use-supplier";
+import type { CreateSupplierPayload } from "@/types/supplier-types";
 import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
 import { useRouter, useSearchParams } from "next/navigation";
-import FiltersSuppliers from "../filters/filterSupplier";
+import toast from "react-hot-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import CommonForm from "../common/forms";
+import { supplierFormControls } from "@/config/supplier-form-controls";
+
+const initialSupplierForm: CreateSupplierPayload = {
+  name: "",
+  email: "",
+  phone: 0,
+  address: "",
+};
 
 function Suppliers() {
+  const [supplierFormData, setSupplierFormData] =
+    useState<CreateSupplierPayload>(initialSupplierForm);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const searchParam = useSearchParams();
   const router = useRouter();
 
   const getParam = (key: string) => searchParam.get(key) ?? undefined;
-
   const params = {
     name: getParam("name"),
     email: getParam("email"),
-    phone: getParam("phone"),
-    address: getParam("address"),
     created_after: getParam("created_after"),
     created_before: getParam("created_before"),
   };
@@ -44,6 +63,33 @@ function Suppliers() {
   const allSuppliers = data?.pages.flatMap((page) => page.results) ?? [];
   const totalCount = data?.pages[0]?.count ?? 0;
 
+  const { mutateAsync, isPending } = useCreateSupplier();
+
+  const handleSupplierFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormErrors({});
+    try {
+      await mutateAsync({
+        ...supplierFormData,
+        phone: Number(supplierFormData.phone),
+      });
+      setSupplierFormData(initialSupplierForm);
+      setDialogOpen(false);
+      toast.success("Added New Supplier");
+    } catch (err: any) {
+      if (err?.response?.data) {
+        const rawErrors = err.response.data;
+        const flatErrors: Record<string, string> = {};
+        for (const key in rawErrors) {
+          flatErrors[key] = Array.isArray(rawErrors[key])
+            ? rawErrors[key][0]
+            : rawErrors[key];
+        }
+        setFormErrors(flatErrors);
+      }
+    }
+  };
+
   if (isLoading) return <SkeletonTable />;
   if (error) {
     console.error(error);
@@ -52,12 +98,35 @@ function Suppliers() {
 
   return (
     <div className="py-5 px-7 w-full">
-      <Button variant="ghost" onClick={() => router.push("/")}>
-        <ArrowLeft />
-        Back
-      </Button>
+      <div className="flex justify-between">
+        <Button variant="ghost" onClick={() => router.push("/")}>
+          <ArrowLeft />
+          Back
+        </Button>
 
-      <FiltersSuppliers />
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Supplier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Add New Supplier</DialogTitle>
+            </DialogHeader>
+            <CommonForm
+              formControls={supplierFormControls}
+              formData={supplierFormData}
+              setFormData={setSupplierFormData}
+              onSubmit={handleSupplierFormSubmit}
+              buttonText={isPending ? "Creating..." : "Create Supplier"}
+              isBtnDisabled={isPending}
+              errors={formErrors}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <Table>
         <TableCaption>Supplier List</TableCaption>
@@ -80,7 +149,9 @@ function Suppliers() {
               <TableCell>{supplier.name}</TableCell>
               <TableCell>{supplier.email}</TableCell>
               <TableCell>{supplier.phone}</TableCell>
-              <TableCell>{supplier.address}</TableCell>
+              <TableCell className="text-muted-foreground">
+                {supplier.address}
+              </TableCell>
               <TableCell>
                 {new Date(supplier.created_at).toLocaleDateString()}
               </TableCell>

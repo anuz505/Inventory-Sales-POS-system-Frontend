@@ -1,5 +1,11 @@
 "use client";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { CreateSupplierPayload } from "@/types/supplier-types";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 
 interface SupplierTypes {
@@ -61,7 +67,13 @@ export function useSupplier(id: string) {
     queryFn: () => fetchSupplier(id),
   });
 }
-
+const createSupplier = async (supplier: CreateSupplierPayload) => {
+  const res = await axios.post<SupplierTypes>(
+    `http://localhost:8000/api-inventory/supplier/`,
+    supplier,
+  );
+  return res.data;
+};
 export function useSuppliers(params: SupplierParams = {}) {
   return useInfiniteQuery({
     queryKey: ["suppliers", params],
@@ -71,6 +83,15 @@ export function useSuppliers(params: SupplierParams = {}) {
       if (!lastPage.next) return undefined;
       const url = new URL(lastPage.next);
       return Number(url.searchParams.get("offset"));
+    },
+  });
+}
+export function useCreateSupplier() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createSupplier,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
     },
   });
 }
