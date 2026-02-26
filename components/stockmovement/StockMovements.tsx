@@ -18,7 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FiltersStockMovement from "../filters/filterStockMovement";
 import { MovementType, MovementReason } from "@/types/stockmovement-types";
 import { Badge } from "../ui/badge";
-
+import { downloadStockMovementCSV } from "@/services/stockmovement-file";
 const movementTypeBadge = (type: MovementType) => {
   return type === "IN" ? (
     <Badge className="bg-green-100 text-green-700 hover:bg-green-100">IN</Badge>
@@ -26,7 +26,6 @@ const movementTypeBadge = (type: MovementType) => {
     <Badge className="bg-red-100 text-red-700 hover:bg-red-100">OUT</Badge>
   );
 };
-
 const reasonBadge = (reason: MovementReason) => {
   const styles: Record<MovementReason, string> = {
     PURCHASE: "bg-blue-100 text-blue-700 hover:bg-blue-100",
@@ -73,18 +72,21 @@ function StockMovements() {
   if (error) {
     console.error(error);
     return (
-      <div className="text-red-500 text-sm">
-        Error loading stock movements.
-      </div>
+      <div className="text-red-500 text-sm">Error loading stock movements.</div>
     );
   }
 
   return (
     <div className="py-5 px-7 w-full">
-      <Button variant="ghost" onClick={() => router.push("/")}>
-        <ArrowLeft />
-        Back
-      </Button>
+      <div className="flex justify-between">
+        <Button variant="ghost" onClick={() => router.push("/")}>
+          <ArrowLeft />
+          Back
+        </Button>
+        <Button variant="outline" onClick={downloadStockMovementCSV}>
+          Download Stock Movement Logs
+        </Button>
+      </div>
       <FiltersStockMovement />
       <Table>
         <TableCaption>Stock Movement List</TableCaption>
