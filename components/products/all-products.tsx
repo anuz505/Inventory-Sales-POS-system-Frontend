@@ -9,10 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Trash } from "lucide-react";
 import AnimatedWarehouse from "../animated-icon/animated-icon-wrapper";
 import { Button } from "../ui/button";
-import { useCreateProduct, useProducts } from "@/hooks/useProducts";
+import {
+  useCreateProduct,
+  useDeleteProduct,
+  useProducts,
+} from "@/hooks/useProducts";
 import type { CreateProductPayload } from "@/hooks/useProducts";
 import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
@@ -122,7 +126,6 @@ function Products() {
     suppliers?.pages.flatMap((page) =>
       page.results.map((s) => ({ id: String(s.id), label: s.name })),
     ) ?? [];
-
   const controls = productFormControls.map((control) => {
     if (control.name === "category")
       return { ...control, options: categoryOptions };
@@ -230,6 +233,7 @@ function Products() {
               <TableCell>{product.supplier_name}</TableCell>
               <TableCell>{product.stock_quantity}</TableCell>
               <TableCell>{product.selling_price}</TableCell>
+
               <TableCell>
                 <AnimatedWarehouse
                   stock={

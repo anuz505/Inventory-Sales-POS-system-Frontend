@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useSale } from "@/hooks/use-sales";
+import { useSale, useDeleteSale } from "@/hooks/use-sales";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   ArrowLeft,
   Receipt,
   User,
@@ -22,7 +28,10 @@ import {
   CreditCard,
   CalendarDays,
   FileText,
+  Trash,
 } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 // --- Helpers ---
 
@@ -78,6 +87,21 @@ export default function SaleById() {
   const id = params.id as string;
   const router = useRouter();
   const { data: sale, isLoading, isError, error } = useSale(id);
+  const { mutate: deleteSale, isPending: deleteSalePending } = useDeleteSale();
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = () => {
+    deleteSale(sale!.id, {
+      onSuccess: () => {
+        toast.success("Sale deleted successfully");
+        setOpen(false);
+        router.back();
+      },
+      onError: () => {
+        toast.error("Failed to delete sale");
+      },
+    });
+  };
 
   if (isLoading) return <SaleByIdSkeleton />;
 
@@ -110,16 +134,49 @@ export default function SaleById() {
   return (
     <div className=" bg-background">
       <div className="w-full px-4 py-10 sm:px-6 lg:px-8 pt-10">
-        {/* Back button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.back()}
-          className="-ml-2 mb-8 gap-1.5 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Sales
-        </Button>
+        {/* Back button + Delete button */}
+        <div className="flex justify-between mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="-ml-2 gap-1.5 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Sales
+          </Button>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="destructive">
+                Delete
+                <Trash />
+              </Button>
+            </DialogTrigger>
+            <DialogContent
+              className="max-w-lg overflow-y-auto"
+              style={{ maxHeight: "70vh" }}
+            >
+              <DialogHeader>Are you sure?</DialogHeader>
+              <div>
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={deleteSalePending}
+                >
+                  {deleteSalePending ? "Deleting..." : "Yes, Delete"}
+                </Button>{" "}
+                <Button
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                  disabled={deleteSalePending}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {/* Title + Badges */}
         <div className="flex flex-col gap-4 mt-3 sm:flex-row sm:items-start sm:justify-between">

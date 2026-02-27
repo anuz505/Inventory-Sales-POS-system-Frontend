@@ -61,12 +61,31 @@ const fetchSupplier = async (id: string) => {
   return res.data;
 };
 
+const updateSupplier = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: Partial<CreateSupplierPayload>;
+}): Promise<SupplierTypes> => {
+  const res = await axios.patch<SupplierTypes>(
+    `http://localhost:8000/api-inventory/supplier/${id}/`,
+    data,
+  );
+  return res.data;
+};
+
+const deleteSupplier = async (id: string): Promise<void> => {
+  await axios.delete(`http://localhost:8000/api-inventory/supplier/${id}/`);
+};
+
 export function useSupplier(id: string) {
   return useQuery({
     queryKey: ["supplier", id],
     queryFn: () => fetchSupplier(id),
   });
 }
+
 const createSupplier = async (supplier: CreateSupplierPayload) => {
   const res = await axios.post<SupplierTypes>(
     `http://localhost:8000/api-inventory/supplier/`,
@@ -74,6 +93,7 @@ const createSupplier = async (supplier: CreateSupplierPayload) => {
   );
   return res.data;
 };
+
 export function useSuppliers(params: SupplierParams = {}) {
   return useInfiniteQuery({
     queryKey: ["suppliers", params],
@@ -90,6 +110,30 @@ export function useCreateSupplier() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createSupplier,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+    },
+  });
+}
+export function useUpdateSupplier() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateSupplier,
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+      queryClient.invalidateQueries({
+        queryKey: ["supplier", variables.id],
+      });
+    },
+  });
+}
+
+export function useDeleteSupplier() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteSupplier,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] });
     },

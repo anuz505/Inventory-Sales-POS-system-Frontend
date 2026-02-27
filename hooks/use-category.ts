@@ -51,7 +51,23 @@ const fetchCategories = async ({
   );
   return res.data;
 };
+const updateCategory = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: Partial<CreateCategoryType>;
+}): Promise<CategoryTypes> => {
+  const res = await axios.patch<CategoryTypes>(
+    `http://localhost:8000/api-inventory/category/${id}/`,
+    data,
+  );
+  return res.data;
+};
 
+const deleteCategory = async (id: string): Promise<void> => {
+  await axios.delete(`http://localhost:8000/api-inventory/category/${id}/`);
+};
 const fetchCategory = async (id: string) => {
   const res = await axios.get<CategoryTypes>(
     `http://localhost:8000/api-inventory/category/${id}`,
@@ -90,6 +106,28 @@ export function useCreateCategory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+}
+export function useUpdateCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateCategory,
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["category", variables.id] });
+    },
+  });
+}
+
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },

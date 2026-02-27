@@ -51,6 +51,10 @@ const createProduct = async (product: CreateProductType) => {
   return response.data;
 };
 
+const deleteProduct = async (id: string): Promise<void> => {
+  await axios.delete(`http://localhost:8000/api-inventory/products/${id}/`);
+};
+
 export function useProducts(params?: ProductQueryParams) {
   return useQuery({
     queryKey: ["products", params],
@@ -73,5 +77,12 @@ export function useCreateProduct() {
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["products"] });
     },
+  });
+}
+export function useDeleteProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
   });
 }

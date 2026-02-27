@@ -46,6 +46,12 @@ const createSales = async (newSale: NewSaleType) => {
   return res.data;
 };
 
+const deleteSale = async (id: string): Promise<void> => {
+  await axios.delete(`http://localhost:8000/api-sales/sales/${id}/`, {
+    withCredentials: true,
+  });
+};
+
 export function useSales(params?: SalesParamsTypes) {
   return useInfiniteQuery({
     queryKey: ["sales", params],
@@ -72,6 +78,14 @@ export function useCreateSale() {
   const queryclient = useQueryClient();
   return useMutation({
     mutationFn: createSales,
+    onSuccess: () => queryclient.invalidateQueries({ queryKey: ["sales"] }),
+  });
+}
+
+export function useDeleteSale() {
+  const queryclient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteSale,
     onSuccess: () => queryclient.invalidateQueries({ queryKey: ["sales"] }),
   });
 }

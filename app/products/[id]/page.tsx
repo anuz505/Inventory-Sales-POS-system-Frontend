@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { useProduct } from "@/hooks/useProducts";
+import React, { useState } from "react";
+import { useDeleteProduct, useProduct } from "@/hooks/useProducts";
 import { Spinner } from "@/components/ui/spinner";
 import { useSaleItem } from "@/hooks/useSalesItem";
 import {
@@ -13,10 +13,18 @@ import {
 } from "@/components/ui/table";
 import { TotalProductsSoldCard } from "@/components/ui/total-sales-card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, PackageOpen } from "lucide-react";
+import { ArrowLeft, PackageOpen, Trash } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ProductSalesChartLine } from "@/components/charts/products-sales-chart";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import toast from "react-hot-toast";
+
 export default function ProductDetail({
   params,
 }: {
@@ -34,6 +42,21 @@ export default function ProductDetail({
     isLoading: saleitemisLoading,
     error: saleItemError,
   } = useSaleItem(id);
+  const { mutate: deleteProduct, isPending: deleteProductPending } =
+    useDeleteProduct();
+  const [open, setOpen] = useState(false);
+  const handleDelete = () => {
+    deleteProduct(product!.id, {
+      onSuccess: () => {
+        toast.success("Product deleted successfully");
+        setOpen(false);
+        router.back();
+      },
+      onError: () => {
+        toast.error("Failed to delete product");
+      },
+    });
+  };
 
   if (productIsLoading || saleitemisLoading)
     return (
@@ -48,14 +71,47 @@ export default function ProductDetail({
   if (!saleitem) return <div>Product has not been sold.</div>;
   return (
     <div className="p-6 space-y-4 pb-20">
-      <Button
-        variant="ghost"
-        size="lg"
-        onClick={() => router.push("/products")}
-      >
-        <ArrowLeft className="h-2 w-2" />
-        Back
-      </Button>
+      <div className="flex justify-between ">
+        <Button
+          variant="ghost"
+          size="lg"
+          onClick={() => router.push("/products")}
+        >
+          <ArrowLeft className="h-2 w-2" />
+          Back
+        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="destructive">
+              Delete
+              <Trash />
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            className="max-w-lg overflow-y-auto"
+            style={{ maxHeight: "70vh" }}
+          >
+            <DialogHeader>Are you sure ?</DialogHeader>
+            <div>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={deleteProductPending}
+              >
+                {deleteProductPending ? "Deleting..." : "Yes, Delete"}
+              </Button>{" "}
+              <Button
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={deleteProductPending}
+              >
+                Cancel
+              </Button>{" "}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
       <h1 className="px-6 pt-6 text-2xl font-semibold text-foreground">
         {product.name}
       </h1>
