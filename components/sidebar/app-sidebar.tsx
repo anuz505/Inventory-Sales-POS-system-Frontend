@@ -73,6 +73,14 @@ export function AppSidebar() {
                       Suppliers
                     </a>
                   </DropdownMenu.Item>
+                  <DropdownMenu.DropdownMenuItem>
+                    <a
+                      href="/categories"
+                      className="block px-4 py-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all  rounded"
+                    >
+                      Categories
+                    </a>
+                  </DropdownMenu.DropdownMenuItem>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             </SidebarMenuItem>

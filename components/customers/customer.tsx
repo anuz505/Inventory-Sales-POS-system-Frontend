@@ -9,13 +9,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Button } from "../ui/button";
-import { useCustomers } from "@/hooks/use-customer";
+import { useCreateCustomer, useCustomers } from "@/hooks/use-customer";
 import { Spinner } from "../ui/spinner";
 import SkeletonTable from "../common/skeleton-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import FiltersCustomers from "../filters/filterCustomer";
+import { NewCustomer } from "@/types/customer-types";
+import toast from "react-hot-toast";
+import router from "next/router";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import CommonForm from "../common/forms";
+import { customerFormControls } from "@/config/customer-form-controls";
+const inititalCustomerForm: NewCustomer = {
+  name: "",
+  email: "",
+  phone_number: "",
+  address: "",
+};
 function Customers() {
   const searchParam = useSearchParams();
   const router = useRouter();
@@ -31,6 +49,7 @@ function Customers() {
     created_before: getParam("created_before"),
   };
 
+  const { mutateAsync, isPending } = useCreateCustomer();
   const {
     data,
     isLoading,
@@ -42,7 +61,32 @@ function Customers() {
 
   const allCustomers = data?.pages.flatMap((page) => page.results) ?? [];
   const totalCount = data?.pages[0]?.count ?? 0;
+  const [customerFormData, setCustomerFormData] =
+    useState<NewCustomer>(inititalCustomerForm);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [dialogOpen, setDialogOpen] = useState(false);
 
+  const handleCustomerFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormErrors({});
+    try {
+      await mutateAsync(customerFormData);
+      setCustomerFormData(inititalCustomerForm);
+      setDialogOpen(false);
+      toast.success("Added a new Customer");
+    } catch (error: any) {
+      if (error?.response?.data) {
+        const rawErrors = error.response.data;
+        const flatErrors: Record<string, string> = {};
+        for (const key in rawErrors) {
+          flatErrors[key] = Array.isArray(rawErrors[key])
+            ? rawErrors[key][0]
+            : rawErrors[key];
+        }
+        setFormErrors(flatErrors);
+      }
+    }
+  };
   if (isLoading) return <SkeletonTable />;
   if (error) {
     console.error(error);
@@ -51,10 +95,34 @@ function Customers() {
 
   return (
     <div className="py-5 px-7 w-full">
-      <Button variant="ghost" onClick={() => router.push("/")}>
-        <ArrowLeft />
-        Back
-      </Button>
+      <div className="flex justify-between">
+        <Button variant="ghost" onClick={() => router.push("/")}>
+          <ArrowLeft />
+          Back
+        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Customer
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Add New Supplier</DialogTitle>
+            </DialogHeader>
+            <CommonForm
+              formControls={customerFormControls}
+              formData={customerFormData}
+              setFormData={setCustomerFormData}
+              onSubmit={handleCustomerFormSubmit}
+              buttonText={isPending ? "Creating..." : "Create Customer"}
+              isBtnDisabled={isPending}
+              errors={formErrors}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <FiltersCustomers />
 

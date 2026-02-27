@@ -8,6 +8,13 @@ export interface Customer {
   updated_at: string;
 }
 
+export interface NewCustomer {
+  name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+}
+
 export interface PaginatedCustomerResponse {
   count: number;
   next: string | null;
