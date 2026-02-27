@@ -22,6 +22,19 @@ export interface Sale {
   user: number;
 }
 
+export interface NewSaleType {
+  items: {
+    product: string;
+    quantity: number;
+  }[];
+  discount_amount: number;
+  payment_method: "upi" | "card" | "cash" | "wallet" | "net_banking";
+  payment_status: "pending" | "completed" | "refunded";
+
+  notes: string;
+  customer: string;
+}
+
 export interface PaginatedSalesResponse {
   count: number;
   next: string;

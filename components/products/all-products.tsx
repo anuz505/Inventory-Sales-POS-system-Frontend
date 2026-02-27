@@ -182,7 +182,10 @@ function Products() {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent
+            className="max-w-lg overflow-y-auto"
+            style={{ maxHeight: "70vh" }}
+          >
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
             </DialogHeader>

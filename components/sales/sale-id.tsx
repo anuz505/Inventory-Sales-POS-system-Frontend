@@ -34,12 +34,6 @@ const paymentMethodLabels: Record<string, string> = {
   net_banking: "Net Banking",
 };
 
-const formatCurrency = (value: string) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-  }).format(Number(value));
-
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleString("en-IN", {
     dateStyle: "medium",
@@ -165,7 +159,7 @@ export default function SaleById() {
             {
               icon: CreditCard,
               label: "Total",
-              value: formatCurrency(sale.total_amount),
+              value: sale.total_amount,
             },
           ].map(({ icon: Icon, label, value }) => (
             <div
@@ -222,19 +216,20 @@ export default function SaleById() {
                       {(item as any).quantity ?? "—"}
                     </TableCell>
                     <TableCell className="text-right">
+                      Rs.
                       {(item as any).unit_price
-                        ? formatCurrency((item as any).unit_price)
+                        ? (item as any).unit_price
                         : "—"}
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {(item as any).discount &&
                       Number((item as any).discount) > 0
-                        ? `-${formatCurrency((item as any).discount)}`
+                        ? `-${(item as any).discount}`
                         : "—"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       {(item as any).total_price
-                        ? formatCurrency((item as any).total_price)
+                        ? (item as any).total_price
                         : "—"}
                     </TableCell>
                   </TableRow>
@@ -275,20 +270,20 @@ export default function SaleById() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="text-card-foreground">
-                  {formatCurrency(sale.subtotal)}
+                  Rs. {sale.subtotal}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Discount</span>
                 <span className="text-card-foreground">
-                  -{formatCurrency(sale.discount_amount)}
+                  - Rs.{sale.discount_amount}
                 </span>
               </div>
               <Separator />
               <div className="flex justify-between font-semibold">
                 <span className="text-card-foreground">Total</span>
                 <span className="text-card-foreground">
-                  {formatCurrency(sale.total_amount)}
+                  Rs. {sale.total_amount}
                 </span>
               </div>
             </div>

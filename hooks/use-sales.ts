@@ -4,8 +4,10 @@ import {
   useQuery,
   useMutation,
   useInfiniteQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import {
+  NewSaleType,
   PaginatedSalesResponse,
   Sale,
   SalesParamsTypes,
@@ -20,6 +22,7 @@ const fetchSales = async (params: SalesParamsTypes = {}) => {
   });
   const response = await axios.get<PaginatedSalesResponse>(
     `http://localhost:8000/api-sales/sales/?${searchParams.toString()}`,
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -27,14 +30,27 @@ const fetchSales = async (params: SalesParamsTypes = {}) => {
 const fetchSale = async (id: string): Promise<Sale> => {
   const response = await axios.get(
     `http://localhost:8000/api-sales/sales/${id}`,
+    { withCredentials: true },
   );
   return response.data;
 };
+
+const createSales = async (newSale: NewSaleType) => {
+  const res = await axios.post<Sale>(
+    "http://localhost:8000/api-sales/sales/",
+    newSale,
+    {
+      withCredentials: true,
+    },
+  );
+  return res.data;
+};
+
 export function useSales(params?: SalesParamsTypes) {
   return useInfiniteQuery({
     queryKey: ["sales", params],
     queryFn: ({ pageParam = 0 }) =>
-      fetchSales({ ...params, offset: String(pageParam) }), // <-- fix here
+      fetchSales({ ...params, offset: String(pageParam) }),
     initialPageParam: 0,
     placeholderData: keepPreviousData,
     getNextPageParam: (lastPage) => {
@@ -49,5 +65,13 @@ export function useSale(id: string) {
   return useQuery({
     queryKey: ["sale", id],
     queryFn: () => fetchSale(id),
+  });
+}
+
+export function useCreateSale() {
+  const queryclient = useQueryClient();
+  return useMutation({
+    mutationFn: createSales,
+    onSuccess: () => queryclient.invalidateQueries({ queryKey: ["sales"] }),
   });
 }

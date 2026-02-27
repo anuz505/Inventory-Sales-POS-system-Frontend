@@ -9,6 +9,7 @@ export interface FormControl<T> {
   componentType: "input" | "select" | "textarea";
   type?: string;
   options?: Array<{ id: string; label: string }>;
+  controls?: FormControl<any>[]; // <-- Add this line for nested controls
 }
 
 export interface CommonFormProps<T> {
