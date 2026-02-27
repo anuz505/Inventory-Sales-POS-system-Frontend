@@ -86,7 +86,8 @@ export function ChartPieDonutText({
   if (error) return <div>Error loading chart data.</div>;
 
   return (
-    <Card className="flex flex-col min-w-1/6 w-md sm:w-2/6">
+    <Card className="flex flex-col w-full lg:flex-1">
+      {" "}
       <CardHeader className="items-center pb-0">
         <CardTitle>Revenue by Payment Method</CardTitle>
         <CardDescription>
@@ -99,7 +100,7 @@ export function ChartPieDonutText({
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px] "
+          className="mx-auto aspect-square w-full max-w-[300px]"
         >
           <PieChart>
             <ChartTooltip
@@ -110,7 +111,7 @@ export function ChartPieDonutText({
               data={chartData}
               dataKey="total_sales"
               nameKey="payment_method"
-              innerRadius={60}
+              innerRadius={88}
               strokeWidth={5}
             >
               <Label

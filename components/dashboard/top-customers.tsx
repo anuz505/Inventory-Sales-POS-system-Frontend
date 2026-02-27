@@ -33,7 +33,8 @@ export const TopCustomerList = ({
     customers = data?.[params.from]?.sales?.top_customers ?? [];
   }
   return (
-    <Card className={"max-w-md sm:max-w-2/6 w-full "}>
+    <Card className="w-full lg:flex-1">
+      {" "}
       <CardHeader>
         <span className="font-bold">Top Customers</span>
         <CardDescription>

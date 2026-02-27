@@ -36,7 +36,8 @@ const Leaderboard3 = ({
   }
 
   return (
-    <Card className={cn("max-w-md sm:max-w-2/6 w-full ", className)}>
+    <Card className={cn("w-full lg:flex-1", className)}>
+      {" "}
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

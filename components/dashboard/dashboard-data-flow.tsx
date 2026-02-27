@@ -12,7 +12,7 @@ export default function DashboardDataFlow() {
 
   return (
     <div className="p-6">
-      <div className="flex gap-2 w-full">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
         <Leaderboard3
           data={data}
           isLoading={isLoading}
