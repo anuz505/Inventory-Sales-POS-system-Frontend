@@ -183,7 +183,10 @@ export default function ProductDetail({
             </TableHeader>
             <TableBody>
               {saleitem.map((sale) => (
-                <TableRow key={sale.id}>
+                <TableRow
+                  key={sale.id}
+                  onClick={() => router.push(`/sales/${sale.id}`)}
+                >
                   <TableCell>{sale.invoice_number}</TableCell>
                   <TableCell>{sale.payment_status}</TableCell>
                   <TableCell>

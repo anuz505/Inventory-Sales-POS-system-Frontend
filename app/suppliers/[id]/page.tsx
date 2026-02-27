@@ -20,7 +20,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 import { CreateSupplierPayload } from "@/types/supplier-types";
-
+import { useProducts } from "@/hooks/useProducts";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ProductType } from "@/types/products-types";
 export default function SupplierDetail({
   params,
 }: {
@@ -79,7 +89,11 @@ export default function SupplierDetail({
       },
     );
   };
-
+  const {
+    data: products,
+    isLoading: productsLoading,
+    error: productsError,
+  } = useProducts({ supplier: id });
   if (isLoading)
     return (
       <div className="flex justify-center p-10">
@@ -234,7 +248,7 @@ export default function SupplierDetail({
 
       {/* Supplier Details */}
       <div className="flex flex-wrap justify-baseline items-center gap-x-8 gap-y-4 px-6 pb-6 text-sm">
-        <div className="w-30">
+        <div className="w-40">
           <p className="text-muted-foreground">Email</p>
           <p className="font-medium text-foreground">{supplier.email}</p>
         </div>
@@ -264,14 +278,55 @@ export default function SupplierDetail({
         </div>
       </div>
 
-      {/* Placeholder for products linked to this supplier */}
-      <Card className="flex flex-col items-center justify-center py-10 text-center">
-        <Truck className="h-8 w-8 text-muted-foreground mb-2" />
-        <h3 className="font-semibold">No products linked</h3>
-        <p className="text-sm text-muted-foreground">
-          Products associated with this supplier will appear here.
-        </p>
-      </Card>
+      {/* Products linked to this supplier */}
+      <div className="mt-8">
+        <h2 className="font-semibold text-lg px-6 mb-4">
+          Products Linked to Supplier
+        </h2>
+        {productsLoading ? (
+          <div className="flex justify-center p-10">
+            <Spinner />
+          </div>
+        ) : productsError ? (
+          <div className="text-red-500 px-6">Error loading products</div>
+        ) : products && products.results.length > 0 ? (
+          <div className="px-6">
+            <Table>
+              <TableCaption>Products linked to supplier</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead>Selling Price</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.results.map((product: ProductType) => (
+                  <TableRow
+                    key={product.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/products/${product.id}`)}
+                  >
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{product.sku}</TableCell>
+                    <TableCell>{product.stock_quantity}</TableCell>
+                    <TableCell>{product.selling_price}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <Card className="flex flex-col items-center justify-center py-10 text-center">
+            <Truck className="h-8 w-8 text-muted-foreground mb-2" />
+            <h3 className="font-semibold">No products linked</h3>
+            <p className="text-sm text-muted-foreground">
+              Products associated with this supplier will appear here.
+            </p>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

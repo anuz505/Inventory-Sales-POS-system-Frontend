@@ -39,9 +39,22 @@ const createSales = async (newSale: NewSaleType) => {
   const res = await axios.post<Sale>(
     "http://localhost:8000/api-sales/sales/",
     newSale,
-    {
-      withCredentials: true,
-    },
+    { withCredentials: true },
+  );
+  return res.data;
+};
+
+const updateSale = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: Partial<NewSaleType>;
+}): Promise<Sale> => {
+  const res = await axios.patch<Sale>(
+    `http://localhost:8000/api-sales/sales/${id}/`,
+    data,
+    { withCredentials: true },
   );
   return res.data;
 };
@@ -79,6 +92,17 @@ export function useCreateSale() {
   return useMutation({
     mutationFn: createSales,
     onSuccess: () => queryclient.invalidateQueries({ queryKey: ["sales"] }),
+  });
+}
+
+export function useUpdateSale() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateSale,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["sale", data.id] });
+    },
   });
 }
 

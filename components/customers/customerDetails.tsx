@@ -5,17 +5,19 @@ import {
   useDeleteCustomer,
   useUpdateCustomer,
 } from "../../hooks/use-customer";
+import { useSales } from "@/hooks/use-sales";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash, Pencil, User } from "lucide-react";
+import { ArrowLeft, Trash, Pencil, ShoppingCart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import {
@@ -28,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 import { NewCustomer } from "@/types/customer-types";
+import { Sale } from "@/types/sales-types";
 
 export default function CustomerDetail({
   params,
@@ -51,10 +54,8 @@ export default function CustomerDetail({
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-
   const [editForm, setEditForm] = useState<Partial<NewCustomer>>({});
 
-  // Populate form when dialog opens
   const handleEditOpen = (open: boolean) => {
     if (open && customer) {
       setEditForm({
@@ -94,6 +95,15 @@ export default function CustomerDetail({
       },
     );
   };
+
+  const {
+    data: salesData,
+    isLoading: salesLoading,
+    error: salesError,
+  } = useSales({ customer: id });
+
+  const allSales: Sale[] =
+    salesData?.pages.flatMap((page) => page.results) ?? [];
 
   if (customerIsLoading)
     return (
@@ -252,7 +262,7 @@ export default function CustomerDetail({
 
       {/* Customer Details */}
       <div className="flex flex-wrap justify-baseline items-center gap-x-8 gap-y-4 px-6 pb-6 text-sm">
-        <div className="w-30">
+        <div className="w-40">
           <p className="text-muted-foreground">Email</p>
           <p className="font-medium text-foreground">{customer.email}</p>
         </div>
@@ -282,14 +292,57 @@ export default function CustomerDetail({
         </div>
       </div>
 
-      {/* Placeholder for sales/orders related to customer if you add that hook later */}
-      <Card className="flex flex-col items-center justify-center py-10 text-center">
-        <User className="h-8 w-8 text-muted-foreground mb-2" />
-        <h3 className="font-semibold">No sales history yet</h3>
-        <p className="text-sm text-muted-foreground">
-          Sales associated with this customer will appear here.
-        </p>
-      </Card>
+      {/* Sales linked to this customer */}
+      <div className="mt-8">
+        <h2 className="font-semibold text-lg px-6 mb-4">Sales History</h2>
+        {salesLoading ? (
+          <div className="flex justify-center p-10">
+            <Spinner />
+          </div>
+        ) : salesError ? (
+          <div className="text-red-500 px-6">Error loading sales</div>
+        ) : allSales.length > 0 ? (
+          <div className="px-6">
+            <Table>
+              <TableCaption>Sales linked to this customer</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invoice ID</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Total Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {allSales.map((sale: Sale) => (
+                  <TableRow
+                    key={sale.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/sales/${sale.id}`)}
+                  >
+                    <TableCell className="font-mono text-sm">
+                      {sale.invoice_number}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(sale.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{sale.total_amount}</TableCell>
+                    <TableCell>{sale.payment_status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <Card className="flex flex-col items-center justify-center py-10 text-center">
+            <ShoppingCart className="h-8 w-8 text-muted-foreground mb-2" />
+            <h3 className="font-semibold">No sales history yet</h3>
+            <p className="text-sm text-muted-foreground">
+              Sales associated with this customer will appear here.
+            </p>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

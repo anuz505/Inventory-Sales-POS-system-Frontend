@@ -43,6 +43,7 @@ export interface PaginatedSalesResponse {
 }
 
 export interface SalesParamsTypes {
+  customer?: string;
   invoice_numver?: string;
   created_after?: string;
   created_before?: string;
