@@ -9,7 +9,9 @@ import { FilterParams } from "./use-revenue-profit-chart";
 const fetchDashboardStats = async (params: FilterParams) => {
   let url = buildApiUrl("http://localhost:8000/api-dashboard/", params);
 
-  const response = await axios.get<DashboardResponse>(url);
+  const response = await axios.get<DashboardResponse>(url, {
+    withCredentials: true,
+  });
   return response.data;
 };
 

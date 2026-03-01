@@ -7,7 +7,9 @@ import { buildApiUrl } from "@/utils/build-urls";
 
 const fetchTrends = async (params: FilterParams) => {
   let url = buildApiUrl("http://localhost:8000/api-dashboard/trends", params);
-  const response = await axios.get<DashboardTrendsResponse>(url);
+  const response = await axios.get<DashboardTrendsResponse>(url, {
+    withCredentials: true,
+  });
   return response.data;
 };
 export function useTrends(params: FilterParams) {

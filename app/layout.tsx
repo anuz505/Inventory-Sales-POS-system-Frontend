@@ -5,6 +5,7 @@ import ReduxProvider from "@/providers/ReduxProvider";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/providers/theme-provider";
 import SidebarWrapper from "@/providers/sidebar-provider";
+import AuthGuard from "@/components/common/AuthGuard";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -35,7 +36,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SidebarWrapper>{children}</SidebarWrapper>
+            <SidebarWrapper>
+              <AuthGuard>{children}</AuthGuard>
+            </SidebarWrapper>
             <Toaster />
           </ThemeProvider>
         </ReduxProvider>

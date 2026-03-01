@@ -1,23 +1,33 @@
 "use client";
-import SignUp from "@/components/auth/signup";
+import SignIn from "./signin";
 import Link from "next/link";
 import useAuthCheckUser from "@/hooks/AuthCheckUser";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function SignUpPage() {
+export default function SignInClient() {
   const { user, loading } = useAuthCheckUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/");
+    }
+  }, [user, loading, router]);
+
   if (loading) return <Spinner />;
   if (user) return null;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4 py-12">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Left side - Welcome section */}
         <div className="flex-1 text-center lg:text-left">
           <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
             Welcome
           </h1>
-          <p className="text-lg text-gray-600">
-            Join us today and start your journey
+          <p className="text-lg text-gray-600 lg:ml-7">
+            Your dashboard awaits.
           </p>
         </div>
 
@@ -31,16 +41,16 @@ export default function SignUpPage() {
               <p className="text-gray-600">
                 Already have an account?{" "}
                 <Link
-                  href="/sign-in"
+                  href="/sign-up"
                   className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
-                  Sign in
+                  Sign up
                 </Link>
               </p>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-              <SignUp />
+              <SignIn />
             </div>
           </div>
         </div>

@@ -30,6 +30,7 @@ import { useCustomers } from "@/hooks/use-customer";
 import CommonForm from "../common/forms";
 import { salesFormControls } from "@/config/sales-form-controls";
 import { SaleItemsField, SaleItem } from "../sales/SaleItemsfield";
+import { downloadSalesReport } from "@/services/salescsv";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -199,48 +200,52 @@ function Sales() {
           <ArrowLeft className="mr-1 h-4 w-4" />
           Back
         </Button>
+        <div className="flex justify-between gap-2">
+          <Button variant="outline" onClick={downloadSalesReport}>
+            Download Sales CSV
+          </Button>
 
-        {/* Add Sale Dialog */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Sale
-            </Button>
-          </DialogTrigger>
+          {/* Add Sale Dialog */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Sale
+              </Button>
+            </DialogTrigger>
 
-          <DialogContent
-            className="max-w-lg overflow-y-auto"
-            style={{ maxHeight: "70vh" }}
-          >
-            <DialogHeader>
-              <DialogTitle>New Sale</DialogTitle>
-            </DialogHeader>
+            <DialogContent
+              className="max-w-lg overflow-y-auto"
+              style={{ maxHeight: "70vh" }}
+            >
+              <DialogHeader>
+                <DialogTitle>New Sale</DialogTitle>
+              </DialogHeader>
 
-            <div className="flex flex-col gap-3 mt-1">
-              <SaleItemsField
-                items={saleItems}
-                productOptions={productOptions}
-                onChange={setSaleItems}
-                error={formErrors.items}
-              />
+              <div className="flex flex-col gap-3 mt-1">
+                <SaleItemsField
+                  items={saleItems}
+                  productOptions={productOptions}
+                  onChange={setSaleItems}
+                  error={formErrors.items}
+                />
 
-              <hr className="border-border" />
+                <hr className="border-border" />
 
-              <CommonForm
-                formControls={controls}
-                formData={saleFormData}
-                setFormData={setSaleFormData}
-                onSubmit={handleSubmit}
-                buttonText={isPending ? "Creating..." : "Create Sale"}
-                isBtnDisabled={isPending}
-                errors={formErrors}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+                <CommonForm
+                  formControls={controls}
+                  formData={saleFormData}
+                  setFormData={setSaleFormData}
+                  onSubmit={handleSubmit}
+                  buttonText={isPending ? "Creating..." : "Create Sale"}
+                  isBtnDisabled={isPending}
+                  errors={formErrors}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
-
       {/* Filters */}
       <FiltersSales />
 

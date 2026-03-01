@@ -37,8 +37,12 @@ const Navbar = () => {
           </h1>
         </div>
         <div className="flex justify-between gap-4 pr-3">
-          <div className="text-muted-foreground    font-medium md:justify-end lg:justify-end md:flex lg:flex">
-            <Button onClick={handleLoginButtonclick}>
+          <div className="text-muted-foreground    font-medium md:justify-end lg:justify-end md:flex lg:flex  ">
+            <Button
+              onClick={handleLoginButtonclick}
+              disabled={!!user}
+              className="disabled:pointer-events-none disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500"
+            >
               {user ? user.username : "Sign in"}
             </Button>
           </div>

@@ -32,6 +32,7 @@ const fetchProducts = async (params: ProductQueryParams = {}) => {
   });
   const response = await axios.get<ProductListResponse>(
     `http://localhost:8000/api-inventory/products?${searchParams}`,
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -39,6 +40,7 @@ const fetchProducts = async (params: ProductQueryParams = {}) => {
 const fetchProduct = async (id: string): Promise<ProductType> => {
   const response = await axios.get<ProductType>(
     `http://localhost:8000/api-inventory/products/${id}`,
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -47,12 +49,15 @@ const createProduct = async (product: CreateProductType) => {
   const response = await axios.post<ProductType>(
     `http://localhost:8000/api-inventory/products/`,
     product,
+    { withCredentials: true },
   );
   return response.data;
 };
 
 const deleteProduct = async (id: string): Promise<void> => {
-  await axios.delete(`http://localhost:8000/api-inventory/products/${id}/`);
+  await axios.delete(`http://localhost:8000/api-inventory/products/${id}/`, {
+    withCredentials: true,
+  });
 };
 
 export function useProducts(params?: ProductQueryParams) {

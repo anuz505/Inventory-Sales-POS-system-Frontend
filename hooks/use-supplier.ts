@@ -49,6 +49,7 @@ const fetchSuppliers = async ({
         offset: pageParam,
         ...params,
       },
+      withCredentials: true,
     },
   );
   return res.data;
@@ -57,6 +58,7 @@ const fetchSuppliers = async ({
 const fetchSupplier = async (id: string) => {
   const res = await axios.get<SupplierTypes>(
     `http://localhost:8000/api-inventory/supplier/${id}`,
+    { withCredentials: true },
   );
   return res.data;
 };
@@ -71,12 +73,15 @@ const updateSupplier = async ({
   const res = await axios.patch<SupplierTypes>(
     `http://localhost:8000/api-inventory/supplier/${id}/`,
     data,
+    { withCredentials: true },
   );
   return res.data;
 };
 
 const deleteSupplier = async (id: string): Promise<void> => {
-  await axios.delete(`http://localhost:8000/api-inventory/supplier/${id}/`);
+  await axios.delete(`http://localhost:8000/api-inventory/supplier/${id}/`, {
+    withCredentials: true,
+  });
 };
 
 export function useSupplier(id: string) {
@@ -90,6 +95,7 @@ const createSupplier = async (supplier: CreateSupplierPayload) => {
   const res = await axios.post<SupplierTypes>(
     `http://localhost:8000/api-inventory/supplier/`,
     supplier,
+    { withCredentials: true },
   );
   return res.data;
 };

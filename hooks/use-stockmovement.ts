@@ -19,6 +19,7 @@ const fetchStockMovements = async (params: StockMovementParamsTypes = {}) => {
   });
   const response = await axios.get<PaginatedStockMovementResponse>(
     `http://localhost:8000/api-inventory/stockmovement/?${searchParams.toString()}`,
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -26,6 +27,7 @@ const fetchStockMovements = async (params: StockMovementParamsTypes = {}) => {
 const fetchStockMovement = async (id: string): Promise<StockMovement> => {
   const response = await axios.get(
     `http://localhost:8000/api-inventory/stockmovement/${id}/`,
+    { withCredentials: true },
   );
   return response.data;
 };

@@ -1,18 +1,10 @@
 import axios from "axios";
-export function getFilenameFromDisposition(disposition?: string) {
-  if (!disposition) return "download.csv";
-
-  const match = disposition.match(/filename="?([^"]+)"?/i);
-  return match?.[1] ?? "download.csv";
-}
-export const downloadStockMovementCSV = async () => {
+import { getFilenameFromDisposition } from "./stockmovement-file";
+export const downloadSalesReport = async () => {
   const res = await axios.get(
-    "http://localhost:8000/api-dashboard/stock-movement?period=12months",
-    {
-      responseType: "blob",
-    },
+    "http://localhost:8000/api-dashboard/sales-report/?period=12months",
+    { responseType: "blob" },
   );
-
   const filename = getFilenameFromDisposition(
     res.headers["content-disposition"],
   );

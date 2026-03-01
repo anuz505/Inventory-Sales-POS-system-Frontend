@@ -36,12 +36,15 @@ const fetchCustomers = async (
 
   const response = await axios.get<PaginatedCustomerResponse>(
     `${BASE_URL}/customers?${searchParams}`,
+    { withCredentials: true },
   );
   return response.data;
 };
 
 const fetchCustomer = async (id: string): Promise<Customer> => {
-  const response = await axios.get<Customer>(`${BASE_URL}/customers/${id}`);
+  const response = await axios.get<Customer>(`${BASE_URL}/customers/${id}`, {
+    withCredentials: true,
+  });
   return response.data;
 };
 
@@ -49,6 +52,7 @@ const createCustomer = async (customer: NewCustomer): Promise<Customer> => {
   const response = await axios.post<Customer>(
     `${BASE_URL}/customers/`,
     customer,
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -63,12 +67,13 @@ const updateCustomer = async ({
   const response = await axios.patch<Customer>(
     `${BASE_URL}/customers/${id}/`,
     data,
+    { withCredentials: true },
   );
   return response.data;
 };
 
 const deleteCustomer = async (id: string): Promise<void> => {
-  await axios.delete(`${BASE_URL}/customers/${id}/`);
+  await axios.delete(`${BASE_URL}/customers/${id}/`, { withCredentials: true });
 };
 
 // ── Hooks ────────────────────────────────────────────────────────────────────

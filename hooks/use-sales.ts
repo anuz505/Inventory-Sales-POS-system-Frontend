@@ -29,7 +29,7 @@ const fetchSales = async (params: SalesParamsTypes = {}) => {
 
 const fetchSale = async (id: string): Promise<Sale> => {
   const response = await axios.get(
-    `http://localhost:8000/api-sales/sales/${id}`,
+    `http://localhost:8000/api-sales/sales/${id}/`,
     { withCredentials: true },
   );
   return response.data;

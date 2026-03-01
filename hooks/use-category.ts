@@ -47,6 +47,7 @@ const fetchCategories = async ({
         offset: pageParam,
         ...params,
       },
+      withCredentials: true,
     },
   );
   return res.data;
@@ -61,16 +62,20 @@ const updateCategory = async ({
   const res = await axios.patch<CategoryTypes>(
     `http://localhost:8000/api-inventory/category/${id}/`,
     data,
+    { withCredentials: true },
   );
   return res.data;
 };
 
 const deleteCategory = async (id: string): Promise<void> => {
-  await axios.delete(`http://localhost:8000/api-inventory/category/${id}/`);
+  await axios.delete(`http://localhost:8000/api-inventory/category/${id}/`, {
+    withCredentials: true,
+  });
 };
 const fetchCategory = async (id: string) => {
   const res = await axios.get<CategoryTypes>(
     `http://localhost:8000/api-inventory/category/${id}`,
+    { withCredentials: true },
   );
   return res.data;
 };
@@ -78,6 +83,7 @@ const createCategory = async (category: CreateCategoryType) => {
   const res = await axios.post<CategoryTypes>(
     "http://localhost:8000/api-inventory/category/",
     category,
+    { withCredentials: true },
   );
   return res.data;
 };

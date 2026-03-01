@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { downloadSalesReport } from "@/services/salescsv";
 
 // --- Helpers ---
 
@@ -118,6 +119,7 @@ export default function SaleById() {
             <ArrowLeft className="h-4 w-4" />
             Back to Sales
           </Button>
+
           <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-5">
             <p className="text-sm font-medium text-destructive">
               Failed to load sale:{" "}
@@ -144,8 +146,7 @@ export default function SaleById() {
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Sales
-          </Button>
-
+          </Button>{" "}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="destructive">

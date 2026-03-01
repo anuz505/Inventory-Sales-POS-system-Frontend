@@ -20,7 +20,9 @@ const fetchRevnueProfitChart = async (params: FilterParams) => {
     params,
   );
 
-  const response = await axios.get<RevenueProfitResponse>(url);
+  const response = await axios.get<RevenueProfitResponse>(url, {
+    withCredentials: true,
+  });
   return response.data;
 };
 

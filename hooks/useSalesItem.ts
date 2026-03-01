@@ -7,6 +7,7 @@ const fetchSalesItemsByProductId = async (
 ): Promise<SalesItemResponseType> => {
   const response = await axios.get<SalesItemResponseType>(
     `http://localhost:8000/api-inventory/products/${product}/sale`,
+    { withCredentials: true },
   );
   return response.data;
 };
