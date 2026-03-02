@@ -106,7 +106,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Total Refunds</CardDescription>
           <CardTitle className="text-2xl">
-            {currentStats?.inventory?.total_refunds?.length ?? 0}
+            {currentStats?.inventory?.total_refunds?.[0]?.count ?? 0}
           </CardTitle>
         </CardHeader>
         <CardFooter className="text-sm text-muted-foreground">
