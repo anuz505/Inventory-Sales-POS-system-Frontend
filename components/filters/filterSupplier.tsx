@@ -37,7 +37,7 @@ function FiltersSuppliers() {
     if (debouncedName) params.set("name", debouncedName);
     else params.delete("name");
     router.replace(`?${params.toString()}`);
-  }, [debouncedName]);
+  }, [debouncedName, searchParam, router]);
 
   const handleApplyFilters = () => {
     const params = new URLSearchParams(searchParam.toString());

@@ -9,9 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Funnel } from "lucide-react";
-import { useCategory } from "@/hooks/use-category";
+import { useCategories } from "@/hooks/use-category";
 import React, { useCallback, useEffect, useState } from "react";
-import { useSupplier } from "@/hooks/use-supplier";
+import { useSuppliers } from "@/hooks/use-supplier";
 import {
   Select,
   SelectContent,
@@ -133,7 +133,7 @@ function FiltersProducts() {
     fetchNextPage: fetchNextCategories,
     hasNextPage: hasNextCategories,
     isFetchingNextPage: isFetchingNextCategories,
-  } = useCategory();
+  } = useCategories();
 
   // Suppliers infinite scroll
   const {
@@ -143,7 +143,7 @@ function FiltersProducts() {
     fetchNextPage: fetchNextSuppliers,
     hasNextPage: hasNextSuppliers,
     isFetchingNextPage: isFetchingNextSuppliers,
-  } = useSupplier();
+  } = useSuppliers();
 
   const onCategoryEnd = useCallback(() => {
     if (hasNextCategories && !isFetchingNextCategories) fetchNextCategories();

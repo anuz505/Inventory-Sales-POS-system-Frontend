@@ -40,7 +40,7 @@ const fetchCategories = async ({
   params: CategoryParams;
 }) => {
   const res = await axios.get<CategoryResponse>(
-    "http://localhost:8000/api-inventory/category",
+    "http://localhost:8000/api-inventory/category/",
     {
       params: {
         limit: 10,
@@ -74,7 +74,7 @@ const deleteCategory = async (id: string): Promise<void> => {
 };
 const fetchCategory = async (id: string) => {
   const res = await axios.get<CategoryTypes>(
-    `http://localhost:8000/api-inventory/category/${id}`,
+    `http://localhost:8000/api-inventory/category/${id}/`,
     { withCredentials: true },
   );
   return res.data;

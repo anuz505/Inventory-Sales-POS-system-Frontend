@@ -47,6 +47,8 @@ function Suppliers() {
   const params = {
     name: getParam("name"),
     email: getParam("email"),
+    phone: getParam("phone"),
+    address: getParam("address"),
     created_after: getParam("created_after"),
     created_before: getParam("created_before"),
   };

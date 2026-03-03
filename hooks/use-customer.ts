@@ -35,7 +35,7 @@ const fetchCustomers = async (
   });
 
   const response = await axios.get<PaginatedCustomerResponse>(
-    `${BASE_URL}/customers?${searchParams}`,
+    `${BASE_URL}/customers/?${searchParams}`,
     { withCredentials: true },
   );
   return response.data;

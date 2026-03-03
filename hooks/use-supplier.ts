@@ -42,7 +42,7 @@ const fetchSuppliers = async ({
   params: SupplierParams;
 }) => {
   const res = await axios.get<SupplierResponse>(
-    "http://localhost:8000/api-inventory/supplier",
+    "http://localhost:8000/api-inventory/supplier/",
     {
       params: {
         limit: 10,
@@ -57,7 +57,7 @@ const fetchSuppliers = async ({
 
 const fetchSupplier = async (id: string) => {
   const res = await axios.get<SupplierTypes>(
-    `http://localhost:8000/api-inventory/supplier/${id}`,
+    `http://localhost:8000/api-inventory/supplier/${id}/`,
     { withCredentials: true },
   );
   return res.data;

@@ -28,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${poppins.variable} intialiased`}>
+      <body
+        className={`${inter.variable} ${poppins.variable} intialiased`}
+        suppressHydrationWarning
+      >
         <ReduxProvider>
           <ThemeProvider
             attribute="class"

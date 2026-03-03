@@ -1,3 +1,4 @@
+"use client";
 import axios from "axios";
 import {
   keepPreviousData,
@@ -31,7 +32,7 @@ const fetchProducts = async (params: ProductQueryParams = {}) => {
     }
   });
   const response = await axios.get<ProductListResponse>(
-    `http://localhost:8000/api-inventory/products?${searchParams}`,
+    `http://localhost:8000/api-inventory/products/?${searchParams}`,
     { withCredentials: true },
   );
   return response.data;
