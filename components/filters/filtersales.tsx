@@ -12,6 +12,7 @@ import { Funnel } from "lucide-react";
 import { Input } from "../ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useEffect, useState } from "react";
+import { custom } from "zod";
 
 function FiltersSales() {
   const searchParam = useSearchParams();
@@ -33,6 +34,7 @@ function FiltersSales() {
   const [minDiscount, setMinDiscount] = useState(getParam("min_discount"));
   const [maxDiscount, setMaxDiscount] = useState(getParam("max_discount"));
   const [createdAfter, setCreatedAfter] = useState(getParam("created_after"));
+  const [customer, setcustomer] = useState(getParam("customer"));
   const [createdBefore, setCreatedBefore] = useState(
     getParam("created_before"),
   );
@@ -58,6 +60,7 @@ function FiltersSales() {
       ["max_total", maxTotal],
       ["min_discount", minDiscount],
       ["max_discount", maxDiscount],
+      ["customer", customer],
       ["created_after", createdAfter],
       ["created_before", createdBefore],
     ];
@@ -80,6 +83,7 @@ function FiltersSales() {
     setMaxDiscount("");
     setCreatedAfter("");
     setCreatedBefore("");
+    setcustomer("");
     router.replace("?");
   };
 
@@ -126,6 +130,14 @@ function FiltersSales() {
                   <option value="net_banking">Net Banking</option>
                   <option value="wallet">Wallet</option>
                 </select>
+              </div>
+              <div>
+                <Input
+                  value={customer}
+                  type="text"
+                  placeholder="Search by Customer Name"
+                  onChange={(e) => setcustomer(e.target.value)}
+                />
               </div>
 
               {/* Payment Status */}

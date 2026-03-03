@@ -10,6 +10,7 @@ export const downloadStockMovementCSV = async () => {
     "http://localhost:8000/api-dashboard/stock-movement?period=12months",
     {
       responseType: "blob",
+      withCredentials: true,
     },
   );
 

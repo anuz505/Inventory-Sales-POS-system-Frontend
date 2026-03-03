@@ -242,7 +242,6 @@ function Users() {
             <TableRow
               key={user.id}
               className="cursor-pointer hover:bg-muted/50"
-              onClick={() => router.push(`/users/${user.id}`)}
             >
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.email}</TableCell>

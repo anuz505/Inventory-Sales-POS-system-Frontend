@@ -5,8 +5,14 @@ export const salesQuerySchema = z
     invoice_number: z.string().min(1).optional(),
 
     // Dates
-    created_after: z.string().datetime({ offset: true }).optional(),
-    created_before: z.string().datetime({ offset: true }).optional(),
+    created_after: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    created_before: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
 
     // Discount filters
     min_discount: z.coerce.number().nonnegative().optional(),
@@ -19,7 +25,7 @@ export const salesQuerySchema = z
     // Relations (UUIDs)
     product: z.string().uuid().optional(),
     user: z.string().uuid().optional(),
-    customer: z.string().uuid().optional(),
+    customer: z.string().min(1).optional(),
 
     // Enums / strings
     payment_method: z.string().min(1).optional(),

@@ -3,7 +3,7 @@ import { getFilenameFromDisposition } from "./stockmovement-file";
 export const downloadSalesReport = async () => {
   const res = await axios.get(
     "http://localhost:8000/api-dashboard/sales-report/?period=12months",
-    { responseType: "blob" },
+    { responseType: "blob", withCredentials: true },
   );
   const filename = getFilenameFromDisposition(
     res.headers["content-disposition"],

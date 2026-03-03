@@ -8,9 +8,17 @@ import {
 } from "@/hooks/use-category";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash, Pencil, Tag } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { ArrowLeft, Trash, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useProducts } from "@/hooks/useProducts";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +39,10 @@ export default function CategoryDetail({
   const router = useRouter();
 
   const { data: category, isLoading, error } = useCategory(id);
+  const { data: productsData, isLoading: productsLoading } = useProducts({
+    category: id,
+    limit: "100",
+  });
   const { mutate: deleteCategory, isPending: deleteIsPending } =
     useDeleteCategory();
   const { mutate: updateCategory, isPending: updateIsPending } =
@@ -228,14 +240,73 @@ export default function CategoryDetail({
         </div>
       </div>
 
-      {/* Placeholder for products under this category */}
-      <Card className="flex flex-col items-center justify-center py-10 text-center">
-        <Tag className="h-8 w-8 text-muted-foreground mb-2" />
-        <h3 className="font-semibold">No products in this category</h3>
-        <p className="text-sm text-muted-foreground">
-          Products assigned to this category will appear here.
-        </p>
-      </Card>
+      {/* Products in this category */}
+      <div className="px-6">
+        <h2 className="text-lg font-semibold mb-3">Products</h2>
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Supplier</TableHead>
+                <TableHead className="text-right">Cost Price</TableHead>
+                <TableHead className="text-right">Selling Price</TableHead>
+                <TableHead className="text-right">Stock</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {productsLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <Spinner />
+                  </TableCell>
+                </TableRow>
+              ) : productsData?.results.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    No products in this category.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                productsData?.results.map((product) => (
+                  <TableRow
+                    key={product.id}
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/products/${product.id}`)}
+                  >
+                    <TableCell className="font-medium">
+                      {product.name}
+                    </TableCell>
+                    <TableCell>{product.sku}</TableCell>
+                    <TableCell>{product.supplier_name}</TableCell>
+                    <TableCell className="text-right">
+                      Rs. {product.cost_price}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      Rs. {product.selling_price}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                          product.stock_quantity <= product.low_stock_limit
+                            ? "bg-red-100 text-red-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {product.stock_quantity}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   );
 }
