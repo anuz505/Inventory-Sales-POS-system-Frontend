@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { CommonFormProps, FormControl } from "@/types/form-types";
 
 const CommonForm = <T extends Record<string, any>>({
@@ -92,6 +93,26 @@ const CommonForm = <T extends Record<string, any>>({
         );
         break;
 
+      case "checkbox":
+        element = (
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={String(getControlItem.name)}
+              checked={!!formData[getControlItem.name]}
+              onCheckedChange={(checked) =>
+                setFormData({
+                  ...formData,
+                  [getControlItem.name]: checked,
+                })
+              }
+            />
+            <span className="text-sm text-muted-foreground">
+              {getControlItem.placeholder}
+            </span>
+          </div>
+        );
+        break;
+
       default:
         element = (
           <Input
@@ -116,7 +137,6 @@ const CommonForm = <T extends Record<string, any>>({
 
   return (
     <form onSubmit={onSubmit}>
-      {/* Show non-field errors at the top */}
       {(errors.non_field_errors || errors.detail) && (
         <div className="text-sm text-red-600 mb-2">
           {errors.non_field_errors || errors.detail}
@@ -124,13 +144,29 @@ const CommonForm = <T extends Record<string, any>>({
       )}
       <div className="flex flex-col gap-3">
         {formControls.map((controlItem) => (
-          <div className="grid w-full gap-1.5" key={String(controlItem.name)}>
-            {errors[controlItem.name] && (
+          <div
+            className={`grid w-full gap-1.5 ${
+              controlItem.componentType === "checkbox"
+                ? "flex flex-row items-center justify-between rounded-lg border p-3"
+                : ""
+            }`}
+            key={String(controlItem.name)}
+          >
+            {errors[controlItem.name as string] && (
               <div className="text-sm text-red-600 mb-1">
-                {errors[controlItem.name]}
+                {errors[controlItem.name as string]}
               </div>
             )}
-            <Label className="mb-1">{controlItem.label}</Label>
+            <Label
+              htmlFor={String(controlItem.name)}
+              className={
+                controlItem.componentType === "checkbox"
+                  ? "cursor-pointer"
+                  : "mb-1"
+              }
+            >
+              {controlItem.label}
+            </Label>
             {renderInputsByComponentType(controlItem)}
           </div>
         ))}

@@ -10,9 +10,9 @@ export interface AuthCheckResponse {
     email: string;
     first_name: string;
     last_name: string;
-    is_staff: boolean;
-    is_superuser: boolean;
+    role: "admin" | "manager" | "staff" | string;
     date_joined: string;
+    isActive: boolean;
   };
 }
 

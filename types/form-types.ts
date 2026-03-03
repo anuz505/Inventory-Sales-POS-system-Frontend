@@ -6,10 +6,10 @@ export interface FormControl<T> {
   name: Extract<keyof T, string>;
   label: string;
   placeholder?: string;
-  componentType: "input" | "select" | "textarea";
+  componentType: "input" | "select" | "textarea" | "checkbox";
   type?: string;
   options?: Array<{ id: string; label: string }>;
-  controls?: FormControl<any>[]; // <-- Add this line for nested controls
+  controls?: FormControl<any>[];
 }
 
 export interface CommonFormProps<T> {
