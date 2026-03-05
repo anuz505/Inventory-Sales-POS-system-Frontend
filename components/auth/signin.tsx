@@ -8,6 +8,7 @@ import { signInFormControls } from "@/config/auth-form-controls";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import usePublicRoute from "@/hooks/PublicRoute";
+import Link from "next/link";
 const SignIn: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormDataType>({
     username: "",
@@ -68,6 +69,14 @@ const SignIn: React.FC = () => {
         onSubmit={onSubmit}
         errors={fieldErrors}
       />
+      <div className="mt-3 text-center">
+        <Link
+          href="/forgot-password"
+          className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+        >
+          Forgot Password?
+        </Link>
+      </div>
     </>
   );
 };

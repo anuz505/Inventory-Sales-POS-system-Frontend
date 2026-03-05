@@ -55,3 +55,12 @@ export interface AuthCheckResponse {
     date_joined: string;
   };
 }
+
+export interface ForgotPasswordFormDataType {
+  email: string;
+}
+
+export interface ResetPasswordFormDataType {
+  otp: string;
+  new_password: string;
+}

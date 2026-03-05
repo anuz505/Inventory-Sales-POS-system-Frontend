@@ -2,6 +2,8 @@ import type {
   AuthResponse,
   LoginFormDataType,
   RegisterFormDataType,
+  ForgotPasswordFormDataType,
+  ResetPasswordFormDataType,
   User,
 } from "@/types/auth-type";
 
@@ -36,8 +38,33 @@ export const authApi = createApi({
         },
       }),
     }),
+    forgotPassword: builder.mutation<
+      { detail: string },
+      ForgotPasswordFormDataType
+    >({
+      query: (data) => ({
+        url: "/forgot-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation<
+      { detail: string },
+      ResetPasswordFormDataType & { email: string }
+    >({
+      query: (data) => ({
+        url: "/reset-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useGetMeQuery } =
-  authApi;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useGetMeQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} = authApi;

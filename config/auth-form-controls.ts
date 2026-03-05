@@ -1,6 +1,11 @@
 // formControls.ts
 
-import { RegisterFormDataType, LoginFormDataType } from "@/types/auth-type";
+import {
+  RegisterFormDataType,
+  LoginFormDataType,
+  ForgotPasswordFormDataType,
+  ResetPasswordFormDataType,
+} from "@/types/auth-type";
 import { FormControl } from "@/types/form-types";
 
 // Sign In Form Controls
@@ -77,3 +82,34 @@ export const signUpFormControls: FormControl<RegisterFormDataType>[] = [
     ],
   },
 ];
+
+// Forgot Password Form Controls (Step 1 - Email)
+export const forgotPasswordFormControls: FormControl<ForgotPasswordFormDataType>[] =
+  [
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "Enter your registered email",
+      componentType: "input",
+      type: "email",
+    },
+  ];
+
+// Reset Password Form Controls (Step 2 - OTP + New Password)
+export const resetPasswordFormControls: FormControl<ResetPasswordFormDataType>[] =
+  [
+    {
+      name: "otp",
+      label: "OTP",
+      placeholder: "Enter the 6-digit OTP",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      name: "new_password",
+      label: "New Password",
+      placeholder: "Enter your new password",
+      componentType: "input",
+      type: "password",
+    },
+  ];

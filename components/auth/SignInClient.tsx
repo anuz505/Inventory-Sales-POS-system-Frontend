@@ -19,7 +19,7 @@ export default function SignInClient() {
   if (loading) return <Spinner />;
   if (user) return null;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 px-4 py-12">
       <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Left side - Welcome section */}
         <div className="flex-1 text-center lg:text-left">
