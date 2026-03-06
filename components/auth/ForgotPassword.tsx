@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import CommonForm from "../common/forms";
@@ -33,6 +33,29 @@ const ForgotPassword: React.FC = () => {
     { otp: "", new_password: "" },
   );
   const [resetErrors, setResetErrors] = useState<{ [key: string]: string }>({});
+
+  // Resend OTP countdown (60s cooldown)
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startCooldown = () => {
+    setResendCountdown(60);
+    countdownRef.current = setInterval(() => {
+      setResendCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownRef.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, []);
 
   const [forgotPassword, { isLoading: isForgotLoading, error: forgotError }] =
     useForgotPasswordMutation();
@@ -79,11 +102,23 @@ const ForgotPassword: React.FC = () => {
     try {
       await forgotPassword(forgotFormData).unwrap();
       toast.success("OTP sent to your email");
+      startCooldown();
       router.push(
         `/forgot-password?email=${encodeURIComponent(forgotFormData.email)}`,
       );
     } catch {
       // errors handled via useEffect above
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!emailParam || resendCountdown > 0) return;
+    try {
+      await forgotPassword({ email: emailParam }).unwrap();
+      toast.success("A new OTP has been sent to your email");
+      startCooldown();
+    } catch {
+      toast.error("Failed to resend OTP. Please try again.");
     }
   };
 
@@ -105,14 +140,31 @@ const ForgotPassword: React.FC = () => {
   // Step 2: OTP + new password
   if (emailParam) {
     return (
-      <CommonForm
-        formControls={resetPasswordFormControls}
-        formData={resetFormData}
-        buttonText={isResetLoading ? "Resetting..." : "Reset Password"}
-        setFormData={setResetFormData}
-        onSubmit={handleResetSubmit}
-        errors={resetErrors}
-      />
+      <div className="space-y-4">
+        <CommonForm
+          formControls={resetPasswordFormControls}
+          formData={resetFormData}
+          buttonText={isResetLoading ? "Resetting..." : "Reset Password"}
+          setFormData={setResetFormData}
+          onSubmit={handleResetSubmit}
+          errors={resetErrors}
+        />
+        <div className="text-center text-sm text-gray-500">
+          Didn&apos;t receive the code?{" "}
+          <button
+            type="button"
+            onClick={handleResendOtp}
+            disabled={resendCountdown > 0 || isForgotLoading}
+            className="font-medium text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {resendCountdown > 0
+              ? `Resend OTP in ${resendCountdown}s`
+              : isForgotLoading
+                ? "Sending..."
+                : "Resend OTP"}
+          </button>
+        </div>
+      </div>
     );
   }
 
