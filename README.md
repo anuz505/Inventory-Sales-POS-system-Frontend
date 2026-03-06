@@ -9,6 +9,7 @@ A full-featured inventory and sales management dashboard built with **Next.js 15
 - **Next.js 15** (App Router)
 - **TypeScript**
 - **Redux Toolkit** + RTK Query — global state & API calls
+- **TanStack Query (React Query v5)** — server state & data fetching
 - **Tailwind CSS** + **shadcn/ui** — styling & components
 - **Recharts** — data visualisation
 - **pnpm** — package manager
